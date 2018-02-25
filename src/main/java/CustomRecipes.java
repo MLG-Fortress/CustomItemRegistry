@@ -133,6 +133,7 @@ class CustomRecipes implements CommandExecutor, Listener
         switch (args[1].toLowerCase())
         {
             case "shapeless":
+                recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPELESS, item, args[0]));
                 break;
             case "shaped":
                 recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPED, item, args[0]));
@@ -163,6 +164,8 @@ class CustomRecipes implements CommandExecutor, Listener
         {
             case SHAPED:
                 ShapedRecipe shapedRecipe = customItemRecipes.getShapedRecipe(customItemRecipes, createMode.getName());
+
+                //Generate ingredients character map.
                 Map<Material, Character> ingredients = new HashMap<>();
                 ingredients.put(null, 'a');
                 ingredients.put(Material.AIR, 'a');
@@ -173,27 +176,63 @@ class CustomRecipes implements CommandExecutor, Listener
                         continue;
                     ingredients.put(item.getType(), i++);
                 }
+
+                //Generate shape
                 String[] shapedMatrix = getShapedMatrix(ingredients, inventory.getMatrix()).toArray(new String[0]);
                 if (shapedMatrix.length == 0)
                     return; //empty
                 shapedRecipe.shape(shapedMatrix);
+
+                //Set ingredients
                 for (Material material : ingredients.keySet())
                 {
                     if (material == null)
                         continue;
                     shapedRecipe.setIngredient(ingredients.get(material), material);
                 }
+
+                //Add and save to file
                 if (!customItemRecipes.getServer().addRecipe(shapedRecipe))
                 {
                     player.sendMessage("Couldn't add recipe for some reason...");
                     return;
                 }
-                ConfigurationSection section = recipesYaml.createSection(createMode.getName(), shapedRecipe.getIngredientMap());
-                section.set("shape", StringUtils.join(shapedMatrix, ":"));
+                ConfigurationSection shapedSection = recipesYaml.getConfigurationSection("shaped").createSection(createMode.getName(), shapedRecipe.getIngredientMap());
+                shapedSection.set("shape", StringUtils.join(shapedMatrix, ":"));
                 break;
-            case SHAPELESS:
-                break;
+            case SHAPELESS: //Way easier than shaped lol
+                ShapelessRecipe shapelessRecipe = customItemRecipes.getShapelessRecipe(customItemRecipes, createMode.getName());
+                Map<Material, Integer> ingredientCount = new HashMap<>();
+                for (ItemStack itemStack : inventory.getMatrix())
+                {
+                    if (itemStack == null)
+                        continue;
+                    Integer count = ingredientCount.get(itemStack.getType());
+                    if (count == null)
+                        count = 0;
+                    count += itemStack.getAmount();
+                    ingredientCount.put(itemStack.getType(), count);
+                }
 
+                for (Material material : ingredientCount.keySet())
+                {
+                    shapelessRecipe.addIngredient(ingredientCount.get(material), material);
+                }
+
+                //Add and save to file
+                if (!customItemRecipes.getServer().addRecipe(shapelessRecipe))
+                {
+                    player.sendMessage("Couldn't add recipe for some reason...");
+                    return;
+                }
+
+
+                ConfigurationSection shapelessSection = recipesYaml.getConfigurationSection("shapeless").createSection(createMode.getName());
+                for (Material material : ingredientCount.keySet())
+                {
+                    shapelessSection.set(material.name(), ingredientCount.get(material));
+                }
+                break;
         }
     }
 

@@ -142,14 +142,14 @@ class CustomRecipes implements CommandExecutor, Listener
         if (item == null)
             return false;
 
-        switch (args[1].toLowerCase())
+        switch (args[0].toLowerCase())
         {
             case "shapeless":
-                recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPELESS, item, args[0]));
+                recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPELESS, item, args[1]));
                 player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.DISPENSER, "Input shapeless recipe."));
                 break;
             case "shaped":
-                recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPED, item, args[0]));
+                recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPED, item, args[1]));
                 player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.DISPENSER, "Input shaped recipe."));
                 break;
             default:
@@ -196,6 +196,19 @@ class CustomRecipes implements CommandExecutor, Listener
                     return; //empty
                 shapedRecipe.shape(shapedMatrix);
 
+                //setIngredients doesn't accept ingredients that aren't present in the shape so yea...
+                boolean noAir = true;
+                for (String string : shapedMatrix)
+                {
+                    if (string.contains("a"))
+                        noAir = false;
+                }
+                if (noAir)
+                {
+                    ingredients.remove(null);
+                    ingredients.remove(Material.AIR);
+                }
+
                 //Set ingredients
                 for (Material material : ingredients.keySet())
                 {
@@ -210,6 +223,7 @@ class CustomRecipes implements CommandExecutor, Listener
                     player.sendMessage("Couldn't add recipe for some reason...");
                     return;
                 }
+                player.sendMessage(String.join(":", shapedMatrix));
                 ConfigurationSection shapedSection = recipesYaml.getConfigurationSection("shaped").createSection(createMode.getName(), shapedRecipe.getIngredientMap());
                 shapedSection.set("shape", StringUtils.join(shapedMatrix, ":"));
                 break;

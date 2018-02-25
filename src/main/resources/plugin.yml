@@ -6,7 +6,7 @@ author: RoboMWM
 main: com.robomwm.customitemrecipes.CustomItemRecipes
 commands:
   crecipe:
-      usage: /crecipe <customitem name> <shaped/shapeless> - Note that shaped recipes only use one item per slot.
+      usage: /crecipe <shaped/shapeless> <customitem name> - Note that shaped recipes only use one item per slot.
       permission: customitemrecipes.crecipe
       aliases: [crecipes]
   citem:

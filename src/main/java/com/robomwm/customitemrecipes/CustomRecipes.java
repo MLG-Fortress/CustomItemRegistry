@@ -146,11 +146,11 @@ class CustomRecipes implements CommandExecutor, Listener
         {
             case "shapeless":
                 recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPELESS, item, args[0]));
-                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.WORKBENCH, "Input shaped recipe. Close when done."));
+                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.DISPENSER, "Input shaped recipe. Close when done."));
                 break;
             case "shaped":
                 recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPED, item, args[0]));
-                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.WORKBENCH, "Input shapeless recipe. Close when done."));
+                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.DISPENSER, "Input shapeless recipe. Close when done."));
                 break;
             default:
                 return false;
@@ -171,7 +171,7 @@ class CustomRecipes implements CommandExecutor, Listener
         if (createMode == null || !(event.getInventory().getHolder() instanceof CIRHolder))
             return;
 
-        CraftingInventory inventory = (CraftingInventory)event.getInventory();
+        Inventory inventory = event.getInventory();
 
         switch(createMode.getShapeMode())
         {
@@ -183,7 +183,7 @@ class CustomRecipes implements CommandExecutor, Listener
                 ingredients.put(null, 'a');
                 ingredients.put(Material.AIR, 'a');
                 char i = 'b';
-                for (ItemStack item : inventory.getMatrix())
+                for (ItemStack item : inventory.getContents())
                 {
                     if (ingredients.containsKey(item.getType()))
                         continue;
@@ -191,7 +191,7 @@ class CustomRecipes implements CommandExecutor, Listener
                 }
 
                 //Generate shape
-                String[] shapedMatrix = getShapedMatrix(ingredients, inventory.getMatrix()).toArray(new String[0]);
+                String[] shapedMatrix = getShapedMatrix(ingredients, inventory.getContents()).toArray(new String[0]);
                 if (shapedMatrix.length == 0)
                     return; //empty
                 shapedRecipe.shape(shapedMatrix);
@@ -216,7 +216,7 @@ class CustomRecipes implements CommandExecutor, Listener
             case SHAPELESS: //Way easier than shaped lol
                 ShapelessRecipe shapelessRecipe = customItemRecipes.getShapelessRecipe(customItemRecipes, createMode.getName());
                 Map<Material, Integer> ingredientCount = new HashMap<>();
-                for (ItemStack itemStack : inventory.getMatrix())
+                for (ItemStack itemStack : inventory.getContents())
                 {
                     if (itemStack == null)
                         continue;

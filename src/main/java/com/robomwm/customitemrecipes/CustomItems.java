@@ -60,8 +60,7 @@ class CustomItems implements CommandExecutor
 
         for (String itemString : itemsYaml.getKeys(false))
         {
-            ConfigurationSection section = itemsYaml.getConfigurationSection(itemString);
-            customItemRecipes.registerItem((ItemStack)section.get(itemString), itemString);
+            customItemRecipes.registerItem((ItemStack)itemsYaml.get(itemString), itemString);
         }
     }
 
@@ -132,13 +131,13 @@ class CustomItems implements CommandExecutor
                 itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, " ")));
                 break;
             case "register":
-                if (!customItemRecipes.registerItem(item, args[0]))
+                if (!customItemRecipes.registerItem(item, args[1]))
                 {
                     sender.sendMessage("Already registered");
                     return false;
                 }
-                itemsYaml.set(args[0], item);
-                sender.sendMessage("Registered " + args[0]);
+                itemsYaml.set(args[1], item);
+                sender.sendMessage("Registered " + args[1]);
                 return true;
             case "get":
                 ItemStack itemStack = customItemRecipes.getItem(ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, " ")));

@@ -74,7 +74,7 @@ class CustomItems implements CommandExecutor
             switch(args[0].toLowerCase())
             {
                 case "lore":
-                    sender.sendMessage("/" + cmd.getLabel() + " lore <clear/add/set> <lore...>");
+                    sender.sendMessage("/" + cmd.getLabel() + " lore <clear/add> <lore...>");
                     break;
                 case "name":
                     sender.sendMessage("/" + cmd.getLabel() + "name <name...> - Sets display name of item. Color codes accepted.");
@@ -100,7 +100,7 @@ class CustomItems implements CommandExecutor
         switch (args[0].toLowerCase())
         {
             case "lore":
-                List<String> lore = null;
+                List<String> lore;
                 switch(args[1].toLowerCase())
                 {
                     case "remove":
@@ -110,20 +110,15 @@ class CustomItems implements CommandExecutor
                     case "add":
                         if (itemMeta.hasLore())
                             lore = itemMeta.getLore();
-                    case "set":
-                        if (lore == null)
+                        else
                             lore = new ArrayList<>();
                         args[0] = null;
                         args[1] = null;
-                        for (String arg : args)
-                        {
-                            if (arg != null)
-                                lore.add(ChatColor.translateAlternateColorCodes('&', arg));
-                        }
+                        lore.add(ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, " ").substring(2)));
                         itemMeta.setLore(lore);
                         break;
                     default:
-                        sender.sendMessage("/" + cmd.getLabel() + " lore <clear/add/set> <lore...>");
+                        sender.sendMessage("/" + cmd.getLabel() + " lore <clear/add> <lore...>");
                 }
                 break;
             case "name":

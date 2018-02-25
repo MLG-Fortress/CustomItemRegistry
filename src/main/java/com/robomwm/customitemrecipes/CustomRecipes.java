@@ -138,7 +138,7 @@ class CustomRecipes implements CommandExecutor, Listener
         if (!(sender instanceof Player))
             return false;
         Player player = (Player)sender;
-        ItemStack item = customItemRecipes.getItem(ChatColor.translateAlternateColorCodes('&', args[0]));
+        ItemStack item = customItemRecipes.getItem(args[1]);
         if (item == null)
             return false;
 

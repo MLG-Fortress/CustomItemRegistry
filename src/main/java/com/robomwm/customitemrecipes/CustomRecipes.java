@@ -95,7 +95,7 @@ class CustomRecipes implements CommandExecutor, Listener
                     for (String key : section.getKeys(false))
                     {
                         if (key.equalsIgnoreCase("shape"))
-                            return;
+                            continue;
                         char keyChar = key.toCharArray()[0];
                         try
                         {

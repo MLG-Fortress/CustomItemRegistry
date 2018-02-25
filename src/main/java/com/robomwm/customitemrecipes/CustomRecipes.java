@@ -304,8 +304,10 @@ class CustomRecipes implements CommandExecutor, Listener
                 break;
         }
         player.sendMessage("Recipe added");
-        List<ItemStack> itemsToReturn = new ArrayList<>(Arrays.asList(inventory.getContents()));
-        itemsToReturn.remove(null);
+        List<ItemStack> itemsToReturn = new ArrayList<>();
+        for (ItemStack itemStack : inventory.getContents())
+            if (itemStack != null)
+                itemsToReturn.add(itemStack);
         player.getInventory().addItem(itemsToReturn.toArray(new ItemStack[0]));
     }
 

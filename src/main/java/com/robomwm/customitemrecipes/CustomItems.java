@@ -54,6 +54,8 @@ class CustomItems implements CommandExecutor
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
     {
+        if (args.length == 0)
+            return false;
         if (args.length < 2)
         {
             switch(args[0].toLowerCase())
@@ -69,6 +71,7 @@ class CustomItems implements CommandExecutor
                     break;
                 case "get":
                     sender.sendMessage("/" + cmd.getLabel() + "<get> <customitem name...> - Adds custom item to your inventory.");
+                    break;
             }
             return true;
         }

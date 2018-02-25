@@ -8,9 +8,11 @@ commands:
   crecipe:
       usage: /crecipe <customitem name> <shaped/shapeless> - Note that shaped recipes only use one item per slot.
       permission: customitemrecipes.crecipe
+      aliases: [crecipes]
   citem:
       description: /citem <name/register/get/lore>
       permission: customitemrecipes.citem
+      aliases: [citems]
 permissions:
     customitemrecipes.*:
         description: Grants ALL THE THINGS

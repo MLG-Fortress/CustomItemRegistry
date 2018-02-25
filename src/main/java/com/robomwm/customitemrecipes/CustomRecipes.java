@@ -216,7 +216,6 @@ class CustomRecipes implements CommandExecutor, Listener
                 //Generate ingredients character map.
                 Map<Material, Character> ingredients = new HashMap<>();
                 ingredients.put(null, 'a');
-                ingredients.put(Material.AIR, 'a');
                 char i = 'b';
                 for (ItemStack item : inventory.getContents())
                 {

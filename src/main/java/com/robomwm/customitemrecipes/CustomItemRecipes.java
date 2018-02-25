@@ -263,7 +263,7 @@ public class CustomItemRecipes extends JavaPlugin
         try {
             return new String(Hex.decodeHex(hexChars), StandardCharsets.UTF_8);
         } catch (DecoderException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             throw new IllegalArgumentException("Couldn't decode text", e);
         }
     }

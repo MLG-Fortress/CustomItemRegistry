@@ -1,3 +1,5 @@
+package customitemrecipes;
+
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -9,7 +11,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +55,23 @@ class CustomItems implements CommandExecutor
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
     {
         if (args.length < 2)
-            return false;
+        {
+            switch(args[0].toLowerCase())
+            {
+                case "lore":
+                    sender.sendMessage("/" + cmd.getLabel() + " lore <clear/add/set> <lore...>");
+                    break;
+                case "name":
+                    sender.sendMessage("/" + cmd.getLabel() + "name <name...> - Sets display name of item. Color codes accepted.");
+                    break;
+                case "register":
+                    sender.sendMessage("/" + cmd.getLabel() + "register <name...> - Adds custom item to plugin with the given name as its ID, storing it and allowing recipes to be created for it. Color codes accepted but not recommended.");
+                    break;
+                case "get":
+                    sender.sendMessage("/" + cmd.getLabel() + "<get> <customitem name...> - Adds custom item to your inventory.");
+            }
+            return true;
+        }
         if (!(sender instanceof Player))
             return false;
         Player player = (Player)sender;
@@ -105,6 +122,10 @@ class CustomItems implements CommandExecutor
                 }
                 itemsYaml.set(args[0], item);
                 return true;
+            case "get":
+                ItemStack itemStack = customItemRecipes.getItem(ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, " ")));
+                if (itemStack != null)
+                    player.getInventory().addItem(itemStack);
         }
 
         item.setItemMeta(itemMeta);

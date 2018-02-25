@@ -1,3 +1,5 @@
+package customitemrecipes;
+
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.bukkit.ChatColor;

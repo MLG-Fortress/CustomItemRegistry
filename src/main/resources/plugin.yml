@@ -1,0 +1,25 @@
+name: CustomItemRecipes
+description: Create custom items and recipes, complete with API! Wow!
+version: ${project.version}
+website: http://robomwm.com
+author: RoboMWM
+main: com.robomwm.customitemrecipes.CustomItemRecipes
+commands:
+  crecipe:
+      usage: /crecipe <customitem name> <shaped/shapeless> - Note that shaped recipes only use one item per slot.
+      permission: customitemrecipes.crecipe
+  citem:
+      description: /citem <name/register/get/lore>
+      permission: customitemrecipes.citem
+permissions:
+    customitemrecipes.*:
+        description: Grants ALL THE THINGS
+        children:
+            customitemrecipes.citem: true
+            customitemrecipes.crecipe: true
+    customitemrecipes.citem:
+        description: Permission to /citem
+        default: op
+    customitemrecipes.crecipe:
+        description: Permission to /crecipe
+        default: op

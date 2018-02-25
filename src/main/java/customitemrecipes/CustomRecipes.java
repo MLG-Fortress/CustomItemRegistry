@@ -1,5 +1,6 @@
+package customitemrecipes;
+
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -19,8 +20,6 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.material.MaterialData;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -134,15 +133,16 @@ class CustomRecipes implements CommandExecutor, Listener
         {
             case "shapeless":
                 recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPELESS, item, args[0]));
+                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.CRAFTING, "Input shaped recipe. Close when done."));
                 break;
             case "shaped":
                 recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPED, item, args[0]));
+                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.CRAFTING, "Input shapeless recipe. Close when done."));
                 break;
             default:
                 return false;
         }
-
-        player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.CRAFTING, "Input recipe. Close when done."));
+        return true;
     }
 
     private Map<Player, RecipeCreateMode> recipeMaker = new HashMap<>();
@@ -240,7 +240,8 @@ class CustomRecipes implements CommandExecutor, Listener
     //Spent hours trying to figure out how to do this. And um not the most elegant but _could be a lot_ worse
     private List<String> getShapedMatrix(Map<Material, Character> charMap, ItemStack... matrix)
     {
-        //Check row and column "length" via marking occupied slots for each column/row
+        //Mark occupied slots for each column/row.
+        //We're effectively getting the part of the matrix that is "used" so we can "trim" out the unused portions.
         int[] rows = new int[3];
         int[] columns = new int[3];
         for (int i = 0; i < 3; i++)

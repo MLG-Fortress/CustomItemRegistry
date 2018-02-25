@@ -1,4 +1,4 @@
-package customitemrecipes;
+package com.robomwm.customitemrecipes;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;

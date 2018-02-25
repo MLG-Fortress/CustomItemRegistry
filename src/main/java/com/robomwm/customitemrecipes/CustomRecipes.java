@@ -1,4 +1,4 @@
-package customitemrecipes;
+package com.robomwm.customitemrecipes;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;

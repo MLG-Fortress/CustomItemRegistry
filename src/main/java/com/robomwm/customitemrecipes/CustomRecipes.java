@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -116,11 +117,11 @@ class CustomRecipes implements CommandExecutor, Listener
                     customItemRecipes.getLogger().warning(itemString + " is not a custom item, skipping...");
                     continue;
                 }
-                for (ItemStack key : (List<ItemStack>)shapelessSection.getList(recipes))
+                for (String key : shapelessSection.getStringList(recipes))
                 {
                     try
                     {
-                        shapelessRecipe.addIngredient(key.getAmount(), key.getType());
+                        shapelessRecipe.addIngredient(1, Material.getMaterial(key));
                     }
                     catch (Throwable rock)
                     {
@@ -155,7 +156,10 @@ class CustomRecipes implements CommandExecutor, Listener
         ConfigurationSection shapelessSection = itemSection.getConfigurationSection("shapeless");
         if (shapelessSection == null)
             shapelessSection = itemSection.createSection("shapeless");
-        shapelessSection.set(String.valueOf(System.currentTimeMillis()), shapelessRecipe.getIngredientList());
+        List<String> materials = new LinkedList<>();
+        for (ItemStack itemStack : shapelessRecipe.getIngredientList())
+            materials.add(itemStack.getType().name());
+        shapelessSection.set(String.valueOf(System.currentTimeMillis()), materials);
         save();
     }
 
@@ -271,6 +275,8 @@ class CustomRecipes implements CommandExecutor, Listener
                     player.sendMessage("Couldn't add recipe for some reason...");
                     return;
                 }
+                for (ItemStack itemStack : shapelessRecipe.getIngredientList())
+                    player.sendMessage(itemStack.getType().toString());
                 saveShapelessRecipe(createMode.getName(), shapelessRecipe);
                 break;
         }

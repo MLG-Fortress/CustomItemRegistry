@@ -26,10 +26,24 @@ class CustomItems implements CommandExecutor
 {
     private CustomItemRecipes customItemRecipes;
     private YamlConfiguration itemsYaml;
+    private File itemsFile;
+
+    public void save()
+    {
+        try
+        {
+            itemsYaml.save(itemsFile);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     CustomItems(CustomItemRecipes customItemRecipes)
     {
         this.customItemRecipes = customItemRecipes;
-        File itemsFile = new File(customItemRecipes.getDataFolder(), "items.yml");
+        itemsFile = new File(customItemRecipes.getDataFolder(), "items.yml");
         if (!itemsFile.exists())
         {
             try

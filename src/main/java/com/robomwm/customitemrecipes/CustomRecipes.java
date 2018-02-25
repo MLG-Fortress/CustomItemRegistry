@@ -37,12 +37,25 @@ class CustomRecipes implements CommandExecutor, Listener
 {
     private CustomItemRecipes customItemRecipes;
     private YamlConfiguration recipesYaml;
+    private File recipesFile;
+
+    public void save()
+    {
+        try
+        {
+            recipesYaml.save(recipesFile);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
 
     CustomRecipes(CustomItemRecipes customItemRecipes)
     {
         this.customItemRecipes = customItemRecipes;
         customItemRecipes.getServer().getPluginManager().registerEvents(this, customItemRecipes);
-        File recipesFile = new File(customItemRecipes.getDataFolder(), "recipes.yml");
+        recipesFile = new File(customItemRecipes.getDataFolder(), "recipes.yml");
         if (!recipesFile.exists())
         {
             try

@@ -33,10 +33,22 @@ public class CustomItemRecipes extends JavaPlugin
 {
     private Map<String, ItemStack> items = new HashMap<>();
 
+    private CustomItems customItems;
+    private CustomRecipes customRecipes;
+
     public void onEnable()
     {
-        getCommand("citem").setExecutor(new CustomItems(this));
-        getCommand("crecipe").setExecutor(new CustomRecipes(this));
+        saveConfig();
+        customItems = new CustomItems(this);
+        customRecipes = new CustomRecipes(this);
+        getCommand("citem").setExecutor(customItems);
+        getCommand("crecipe").setExecutor(customRecipes);
+    }
+
+    public void onDisable()
+    {
+        customItems.save();
+        customRecipes.save();
     }
     
     public boolean registerItem(ItemStack item, String name)

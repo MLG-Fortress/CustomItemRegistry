@@ -1,6 +1,8 @@
 # CustomItemRecipes
 Create your own custom items and recipes, all in-game (or via the configuration files, if that's your fancy)! Also includes an API so plugins can register their own custom items!
 
+[Source](https://github.com/MLG-Fortress/CustomItemRecipes) | [Patreon](https://patreon.com/RoboMWM)
+
 ## Commands
 - [Permissions](https://github.com/MLG-Fortress/CustomItemRecipes/blob/master/src/main/resources/plugin.yml)
 - /citem - Name, add lore, or register a new custom item.

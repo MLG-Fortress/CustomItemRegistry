@@ -81,7 +81,7 @@ class CustomItems implements CommandExecutor
                     sender.sendMessage("/" + cmd.getLabel() + "name <name...> - Sets display name of item. Color codes accepted.");
                     break;
                 case "register":
-                    sender.sendMessage("/" + cmd.getLabel() + "register <name...> - Adds custom item to plugin with the given name as its ID, storing it and allowing recipes to be created for it. Color codes accepted but not recommended.");
+                    sender.sendMessage("/" + cmd.getLabel() + "register <name...> - Adds custom item to plugin with the given name as its ID, storing it and allowing recipes to be created for it. Color codes not accepted.");
                     break;
                 case "get":
                     sender.sendMessage("/" + cmd.getLabel() + "<get> <customitem name...> - Adds custom item to your inventory.");
@@ -93,7 +93,7 @@ class CustomItems implements CommandExecutor
             return false;
         Player player = (Player)sender;
         ItemStack item = player.getInventory().getItemInMainHand();
-        if (item == null || item.getType() == Material.AIR)
+        if (!args[0].equalsIgnoreCase("get") && (item == null || item.getType() == Material.AIR))
             return false;
 
         ItemMeta itemMeta = item.getItemMeta();
@@ -132,17 +132,24 @@ class CustomItems implements CommandExecutor
                 itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, " ")));
                 break;
             case "register":
-                if (!customItemRecipes.registerItem(item, ChatColor.translateAlternateColorCodes('&', args[0])))
+                if (!customItemRecipes.registerItem(item, args[0]))
                 {
                     sender.sendMessage("Already registered");
                     return false;
                 }
                 itemsYaml.set(args[0], item);
+                sender.sendMessage("Registered " + args[0]);
                 return true;
             case "get":
                 ItemStack itemStack = customItemRecipes.getItem(ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, " ")));
                 if (itemStack != null)
+                {
+                    player.sendMessage("Attempted to give you item");
                     player.getInventory().addItem(itemStack);
+                }
+                else
+                    player.sendMessage("Item id not registered.");
+                return true;
         }
 
         item.setItemMeta(itemMeta);

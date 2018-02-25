@@ -62,7 +62,7 @@ public class CustomItemRecipes extends JavaPlugin
             return false;
         ItemStack itemStack = item.clone();
         setItemVersion(itemStack, name, version);
-        items.put(name, item.clone());
+        items.put(name, itemStack);
         return true;
     }
 

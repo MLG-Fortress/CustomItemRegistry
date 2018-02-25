@@ -71,8 +71,8 @@ class CustomItems implements CommandExecutor
             return false;
         if (cmd.getName().equalsIgnoreCase("cremove"))
         {
-            if (customItemRecipes.removeItem(args[1]))
-                sender.sendMessage("Removed " + args[1] + " and any of its recipes.");
+            if (customItemRecipes.removeItem(args[0]))
+                sender.sendMessage("Removed " + args[1] + " and all of its recipes.");
             else
                 sender.sendMessage("Item is not registered");
             return true;

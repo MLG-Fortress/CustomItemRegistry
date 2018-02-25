@@ -24,6 +24,7 @@ import org.bukkit.inventory.ShapelessRecipe;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,59 +76,92 @@ class CustomRecipes implements CommandExecutor, Listener
         if (recipesYaml.getConfigurationSection("shapeless") == null)
             recipesYaml.createSection("shapeless");
 
-        for (String itemString : recipesYaml.getConfigurationSection("shaped").getKeys(false))
+        for (String itemString : recipesYaml.getKeys(false))
         {
-            ShapedRecipe shapedRecipe = customItemRecipes.getShapedRecipe(customItemRecipes, itemString);
-            if (shapedRecipe == null)
+            ConfigurationSection shapedSection = recipesYaml.getConfigurationSection(itemString).getConfigurationSection("shaped");
+            if (shapedSection != null)
             {
-                customItemRecipes.getLogger().warning(itemString + " is not a custom item, skipping...");
-                continue;
-            }
-            ConfigurationSection section = recipesYaml.getConfigurationSection("shaped").getConfigurationSection(itemString);
-            shapedRecipe.shape(section.getString("shape").split(":"));
-            for (String key : section.getKeys(false))
-            {
-                if (key.equalsIgnoreCase("shape"))
-                    return;
-                char keyChar = key.toCharArray()[0];
-                try
+                for (String recipes : shapedSection.getKeys(false))
                 {
-                    shapedRecipe.setIngredient(keyChar, Material.getMaterial(section.getString(key)));
-                }
-                catch (Throwable rock)
-                {
-                    customItemRecipes.getLogger().severe("invalid ingredient specified for " + itemString);
-                    rock.printStackTrace();
-                    return; //go PR error handling here if u wanna
+                    ShapedRecipe shapedRecipe = customItemRecipes.getShapedRecipe(customItemRecipes, itemString);
+                    if (shapedRecipe == null)
+                    {
+                        customItemRecipes.getLogger().warning(itemString + " is not a custom item, skipping...");
+                        continue;
+                    }
+                    ConfigurationSection section = shapedSection.getConfigurationSection(recipes);
+                    shapedRecipe.shape(section.getString("shape").split(":"));
+                    for (String key : section.getKeys(false))
+                    {
+                        if (key.equalsIgnoreCase("shape"))
+                            return;
+                        char keyChar = key.toCharArray()[0];
+                        try
+                        {
+                            shapedRecipe.setIngredient(keyChar, Material.getMaterial(section.getString(key)));
+                        }
+                        catch (Throwable rock)
+                        {
+                            customItemRecipes.getLogger().severe("invalid ingredient specified for " + itemString);
+                            rock.printStackTrace();
+                            return; //go PR error handling here if u wanna
+                        }
+                    }
+                    customItemRecipes.getServer().addRecipe(shapedRecipe);
                 }
             }
-            customItemRecipes.getServer().addRecipe(shapedRecipe);
-        }
 
-        for (String itemString : recipesYaml.getConfigurationSection("shapeless").getKeys(false))
-        {
-            ShapelessRecipe shapelessRecipe = customItemRecipes.getShapelessRecipe(customItemRecipes, itemString);
-            if (shapelessRecipe == null)
+            ConfigurationSection shapelessSection = recipesYaml.getConfigurationSection(itemString).getConfigurationSection("shaped");
+
+            for (String recipes : shapelessSection.getKeys(false))
             {
-                customItemRecipes.getLogger().warning(itemString + " is not a custom item, skipping...");
-                continue;
-            }
-            ConfigurationSection section = recipesYaml.getConfigurationSection("shapeless").getConfigurationSection(itemString);
-            for (String key : section.getKeys(false))
-            {
-                try
+                ShapelessRecipe shapelessRecipe = customItemRecipes.getShapelessRecipe(customItemRecipes, itemString);
+                if (shapelessRecipe == null)
                 {
-                    shapelessRecipe.addIngredient(section.getInt(key), Material.getMaterial(key));
+                    customItemRecipes.getLogger().warning(itemString + " is not a custom item, skipping...");
+                    continue;
                 }
-                catch (Throwable rock)
+                for (ItemStack key : (List<ItemStack>)shapelessSection.getList(recipes))
                 {
-                    customItemRecipes.getLogger().severe("invalid ingredient specified for " + itemString);
-                    rock.printStackTrace();
-                    return; //go PR error handling here if u wanna
+                    try
+                    {
+                        shapelessRecipe.addIngredient(key.getAmount(), key.getType());
+                    }
+                    catch (Throwable rock)
+                    {
+                        customItemRecipes.getLogger().severe("invalid ingredient specified for " + itemString);
+                        rock.printStackTrace();
+                        return; //go PR error handling here if u wanna
+                    }
                 }
+                customItemRecipes.getServer().addRecipe(shapelessRecipe);
             }
-            customItemRecipes.getServer().addRecipe(shapelessRecipe);
         }
+    }
+
+    public void saveShapedRecipe(String name, ShapedRecipe shapedRecipe)
+    {
+        ConfigurationSection itemSection = recipesYaml.getConfigurationSection(name);
+        if (itemSection == null)
+            itemSection = recipesYaml.createSection(name);
+        ConfigurationSection shapedSection = itemSection.getConfigurationSection("shaped");
+        if (shapedSection == null)
+            shapedSection = itemSection.createSection("shaped");
+        ConfigurationSection recipeSection = shapedSection.createSection(String.valueOf(System.currentTimeMillis()), shapedRecipe.getIngredientMap());
+        recipeSection.set("shape", StringUtils.join(shapedRecipe.getShape(), ":"));
+        save();
+    }
+
+    public void saveShapelessRecipe(String name, ShapelessRecipe shapelessRecipe)
+    {
+        ConfigurationSection itemSection = recipesYaml.getConfigurationSection(name);
+        if (itemSection == null)
+            itemSection = recipesYaml.createSection(name);
+        ConfigurationSection shapelessSection = itemSection.getConfigurationSection("shapeless");
+        if (shapelessSection == null)
+            shapelessSection = itemSection.createSection("shapeless");
+        shapelessSection.set(String.valueOf(System.currentTimeMillis()), shapelessRecipe.getIngredientList());
+        save();
     }
 
     @Override
@@ -209,12 +243,14 @@ class CustomRecipes implements CommandExecutor, Listener
                     ingredients.remove(Material.AIR);
                 }
 
+                player.sendMessage("Recipe shape: " + String.join(":", shapedMatrix));
                 //Set ingredients
                 for (Material material : ingredients.keySet())
                 {
                     if (material == null)
                         continue;
                     shapedRecipe.setIngredient(ingredients.get(material), material);
+                    player.sendMessage(ingredients.get(material).toString() + " = " + material.toString());
                 }
 
                 //Add and save to file
@@ -223,27 +259,15 @@ class CustomRecipes implements CommandExecutor, Listener
                     player.sendMessage("Couldn't add recipe for some reason...");
                     return;
                 }
-                player.sendMessage(String.join(":", shapedMatrix));
-                ConfigurationSection shapedSection = recipesYaml.getConfigurationSection("shaped").createSection(createMode.getName(), shapedRecipe.getIngredientMap());
-                shapedSection.set("shape", StringUtils.join(shapedMatrix, ":"));
+                saveShapedRecipe(createMode.getName(), shapedRecipe);
                 break;
             case SHAPELESS: //Way easier than shaped lol
                 ShapelessRecipe shapelessRecipe = customItemRecipes.getShapelessRecipe(customItemRecipes, createMode.getName());
-                Map<Material, Integer> ingredientCount = new HashMap<>();
                 for (ItemStack itemStack : inventory.getContents())
                 {
                     if (itemStack == null)
                         continue;
-                    Integer count = ingredientCount.get(itemStack.getType());
-                    if (count == null)
-                        count = 0;
-                    count += itemStack.getAmount();
-                    ingredientCount.put(itemStack.getType(), count);
-                }
-
-                for (Material material : ingredientCount.keySet())
-                {
-                    shapelessRecipe.addIngredient(ingredientCount.get(material), material);
+                    shapelessRecipe.addIngredient(1, itemStack.getType());
                 }
 
                 //Add and save to file
@@ -252,15 +276,10 @@ class CustomRecipes implements CommandExecutor, Listener
                     player.sendMessage("Couldn't add recipe for some reason...");
                     return;
                 }
-
-
-                ConfigurationSection shapelessSection = recipesYaml.getConfigurationSection("shapeless").createSection(createMode.getName());
-                for (Material material : ingredientCount.keySet())
-                {
-                    shapelessSection.set(material.name(), ingredientCount.get(material));
-                }
+                saveShapelessRecipe(createMode.getName(), shapelessRecipe);
                 break;
         }
+        player.sendMessage("Recipe added");
     }
 
     //Ugly. Ugh. If you know a better way, please PR or at least tell me. BUT IT WORKS WOOOOOOOOOOOO YESSSSS

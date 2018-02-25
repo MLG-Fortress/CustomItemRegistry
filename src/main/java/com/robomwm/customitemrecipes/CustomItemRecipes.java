@@ -145,7 +145,7 @@ public class CustomItemRecipes extends JavaPlugin
 
     /**
      * Returns id hidden inside the lore of the item, if present.
-     * @param itemStack
+     * @param itemMeta
      * @return name of custom item, null otherwise
      */
     public String extractCustomID(ItemMeta itemMeta)

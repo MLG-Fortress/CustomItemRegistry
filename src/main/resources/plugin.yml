@@ -6,22 +6,29 @@ author: RoboMWM
 main: com.robomwm.customitemrecipes.CustomItemRecipes
 commands:
   crecipe:
-      usage: /crecipe <shaped/shapeless> <customitem name> - Note that shaped recipes only use one item per slot.
+      usage: /crecipe <shaped/shapeless> <customitem name> - Note that recipes only use one item per slot.
       permission: customitemrecipes.crecipe
       aliases: [crecipes]
   citem:
       usage: /citem <name/register/get/lore>
       permission: customitemrecipes.citem
       aliases: [citems]
+  cremove:
+      usage: /cremove <name> - removes custom item and its recipes
+      permission: customitemrecipes.cremove
 permissions:
     customitemrecipes.*:
         description: Grants ALL THE THINGS
         children:
             customitemrecipes.citem: true
             customitemrecipes.crecipe: true
+            customitemrecipes.cremove: true
     customitemrecipes.citem:
         description: Permission to /citem
         default: op
     customitemrecipes.crecipe:
         description: Permission to /crecipe
+        default: op
+    customitemrecipes.crecipe:
+        description: Permission to /cremove
         default: op

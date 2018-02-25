@@ -146,11 +146,11 @@ class CustomRecipes implements CommandExecutor, Listener
         {
             case "shapeless":
                 recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPELESS, item, args[0]));
-                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.CRAFTING, "Input shaped recipe. Close when done."));
+                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.WORKBENCH, "Input shaped recipe. Close when done."));
                 break;
             case "shaped":
                 recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPED, item, args[0]));
-                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.CRAFTING, "Input shapeless recipe. Close when done."));
+                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.WORKBENCH, "Input shapeless recipe. Close when done."));
                 break;
             default:
                 return false;

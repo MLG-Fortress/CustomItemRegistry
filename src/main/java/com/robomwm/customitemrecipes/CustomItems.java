@@ -128,7 +128,7 @@ class CustomItems implements CommandExecutor
                 break;
             case "name":
                 args[0] = null;
-                itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, " ")));
+                itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, " ").substring(1)));
                 break;
             case "register":
                 if (!customItemRecipes.registerItem(item, args[1]))

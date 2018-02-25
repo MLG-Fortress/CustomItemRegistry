@@ -283,6 +283,7 @@ class CustomRecipes implements CommandExecutor, Listener
                 break;
         }
         player.sendMessage("Recipe added");
+        player.getInventory().addItem(inventory.getContents());
     }
 
     //Ugly. Ugh. If you know a better way, please PR or at least tell me. BUT IT WORKS WOOOOOOOOOOOO YESSSSS

@@ -69,6 +69,14 @@ class CustomItems implements CommandExecutor
     {
         if (args.length == 0)
             return false;
+        if (cmd.getName().equalsIgnoreCase("cremove"))
+        {
+            if (customItemRecipes.removeItem(args[1]))
+                sender.sendMessage("Removed " + args[1] + " and any of its recipes.");
+            else
+                sender.sendMessage("Item is not registered");
+            return true;
+        }
         if (args.length < 2)
         {
             switch(args[0].toLowerCase())
@@ -85,6 +93,8 @@ class CustomItems implements CommandExecutor
                 case "get":
                     sender.sendMessage("/" + cmd.getLabel() + "<get> <customitem name> - Adds custom item to your inventory.");
                     break;
+                default:
+                    return false;
             }
             return true;
         }

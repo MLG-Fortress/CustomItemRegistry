@@ -42,6 +42,7 @@ public class CustomItemRecipes extends JavaPlugin
         customItems = new CustomItems(this);
         customRecipes = new CustomRecipes(this);
         getCommand("citem").setExecutor(customItems);
+        getCommand("cremove").setExecutor(customItems);
         getCommand("crecipe").setExecutor(customRecipes);
     }
 

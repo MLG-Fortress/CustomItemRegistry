@@ -71,6 +71,7 @@ class CustomRecipes implements CommandExecutor, Listener
             }
         }
         recipesYaml = YamlConfiguration.loadConfiguration(recipesFile);
+        customItemRecipes.getLogger().info("Starting to load recipes");
 
         for (String itemString : recipesYaml.getKeys(false))
         {

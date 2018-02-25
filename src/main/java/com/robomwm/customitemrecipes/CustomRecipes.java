@@ -143,8 +143,10 @@ class CustomRecipes implements CommandExecutor, Listener
         ConfigurationSection shapedSection = itemSection.getConfigurationSection("shaped");
         if (shapedSection == null)
             shapedSection = itemSection.createSection("shaped");
-        ConfigurationSection recipeSection = shapedSection.createSection(String.valueOf(System.currentTimeMillis()), shapedRecipe.getIngredientMap());
+        ConfigurationSection recipeSection = shapedSection.createSection(String.valueOf(System.currentTimeMillis()));
         recipeSection.set("shape", StringUtils.join(shapedRecipe.getShape(), ":"));
+        for (char keyChar : shapedRecipe.getIngredientMap().keySet())
+            recipeSection.set(String.valueOf(keyChar), shapedRecipe.getIngredientMap().get(keyChar)); //Yes not optimal but it's only being called 9 times max, and on command only.
         save();
     }
 

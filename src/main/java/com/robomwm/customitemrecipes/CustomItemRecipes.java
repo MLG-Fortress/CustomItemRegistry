@@ -32,6 +32,12 @@ import java.util.stream.IntStream;
 public class CustomItemRecipes extends JavaPlugin
 {
     private Map<String, ItemStack> items = new HashMap<>();
+
+    public void onEnable()
+    {
+        getCommand("citem").setExecutor(new CustomItems(this));
+        getCommand("crecipe").setExecutor(new CustomRecipes(this));
+    }
     
     public boolean registerItem(ItemStack item, String name)
     {

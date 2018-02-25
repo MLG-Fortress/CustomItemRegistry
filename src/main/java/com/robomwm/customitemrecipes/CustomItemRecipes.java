@@ -261,17 +261,18 @@ public class CustomItemRecipes extends JavaPlugin
 
         char[] chars = text.toCharArray();
 
+        try
+        {
         char[] hexChars = new char[chars.length / 2];
 
         IntStream.range(0, chars.length)
                 .filter(value -> value % 2 != 0)
                 .forEach(value -> hexChars[value / 2] = chars[value]);
-
-        try {
             return new String(Hex.decodeHex(hexChars), StandardCharsets.UTF_8);
         } catch (DecoderException e) {
             //e.printStackTrace();
-            throw new IllegalArgumentException("Couldn't decode text", e);
+            //throw new IllegalArgumentException("Couldn't decode text", e);
+            return null;
         }
     }
 }

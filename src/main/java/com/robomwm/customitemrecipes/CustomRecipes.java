@@ -74,6 +74,7 @@ class CustomRecipes implements CommandExecutor, Listener
 
         for (String itemString : recipesYaml.getKeys(false))
         {
+            customItemRecipes.getLogger().info("Loading recipes for " + itemString);
             ConfigurationSection shapedSection = recipesYaml.getConfigurationSection(itemString).getConfigurationSection("shaped");
             if (shapedSection != null)
             {
@@ -103,34 +104,39 @@ class CustomRecipes implements CommandExecutor, Listener
                             return; //go PR error handling here if u wanna
                         }
                     }
+                    customItemRecipes.getLogger().info("Loaded recipe " + recipes);
                     customItemRecipes.getServer().addRecipe(shapedRecipe);
                 }
             }
 
             ConfigurationSection shapelessSection = recipesYaml.getConfigurationSection(itemString).getConfigurationSection("shaped");
 
-            for (String recipes : shapelessSection.getKeys(false))
+            if (shapelessSection != null)
             {
-                ShapelessRecipe shapelessRecipe = customItemRecipes.getShapelessRecipe(customItemRecipes, itemString);
-                if (shapelessRecipe == null)
+                for (String recipes : shapelessSection.getKeys(false))
                 {
-                    customItemRecipes.getLogger().warning(itemString + " is not a custom item, skipping...");
-                    continue;
-                }
-                for (String key : shapelessSection.getStringList(recipes))
-                {
-                    try
+                    ShapelessRecipe shapelessRecipe = customItemRecipes.getShapelessRecipe(customItemRecipes, itemString);
+                    if (shapelessRecipe == null)
                     {
-                        shapelessRecipe.addIngredient(1, Material.getMaterial(key));
+                        customItemRecipes.getLogger().warning(itemString + " is not a custom item, skipping...");
+                        continue;
                     }
-                    catch (Throwable rock)
+                    for (String key : shapelessSection.getStringList(recipes))
                     {
-                        customItemRecipes.getLogger().severe("invalid ingredient specified for " + itemString);
-                        rock.printStackTrace();
-                        return; //go PR error handling here if u wanna
+                        try
+                        {
+                            shapelessRecipe.addIngredient(1, Material.getMaterial(key));
+                        }
+                        catch (Throwable rock)
+                        {
+                            customItemRecipes.getLogger().severe("invalid ingredient specified for " + itemString);
+                            rock.printStackTrace();
+                            return; //go PR error handling here if u wanna
+                        }
                     }
+                    customItemRecipes.getLogger().info("Loaded recipe " + recipes);
+                    customItemRecipes.getServer().addRecipe(shapelessRecipe);
                 }
-                customItemRecipes.getServer().addRecipe(shapelessRecipe);
             }
         }
     }

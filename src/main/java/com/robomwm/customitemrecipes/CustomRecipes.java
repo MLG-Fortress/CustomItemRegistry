@@ -24,6 +24,7 @@ import org.bukkit.inventory.ShapelessRecipe;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -79,8 +80,10 @@ class CustomRecipes implements CommandExecutor, Listener
             ConfigurationSection shapedSection = recipesYaml.getConfigurationSection(itemString).getConfigurationSection("shaped");
             if (shapedSection != null) //for each shapedRecipe
             {
+                customItemRecipes.getLogger().info("Loading shaped recipes");
                 for (String recipes : shapedSection.getKeys(false)) //for each recipe
                 {
+                    customItemRecipes.getLogger().info("Loading " + recipes);
                     ShapedRecipe shapedRecipe = customItemRecipes.getShapedRecipe(customItemRecipes, itemString);
                     if (shapedRecipe == null)
                     {
@@ -110,12 +113,13 @@ class CustomRecipes implements CommandExecutor, Listener
                 }
             }
 
-            ConfigurationSection shapelessSection = recipesYaml.getConfigurationSection(itemString).getConfigurationSection("shaped");
+            ConfigurationSection shapelessSection = recipesYaml.getConfigurationSection(itemString).getConfigurationSection("shapeless");
 
             if (shapelessSection != null)
             {
                 for (String recipes : shapelessSection.getKeys(false)) //for each shapeless recipe
                 {
+                    customItemRecipes.getLogger().info("Loading shapeless recipes");
                     ShapelessRecipe shapelessRecipe = customItemRecipes.getShapelessRecipe(customItemRecipes, itemString);
                     if (shapelessRecipe == null)
                     {
@@ -161,7 +165,7 @@ class CustomRecipes implements CommandExecutor, Listener
         for (char keyChar : shapedRecipe.getIngredientMap().keySet())
         {
             if (keyChar == 'a')
-                return;
+                continue;
             recipeSection.set(String.valueOf(keyChar), shapedRecipe.getIngredientMap().get(keyChar).getType().name()); //Yes not optimal but it's only being called 9 times max, and on command only.
         }
 
@@ -300,7 +304,9 @@ class CustomRecipes implements CommandExecutor, Listener
                 break;
         }
         player.sendMessage("Recipe added");
-        player.getInventory().addItem(inventory.getContents());
+        List<ItemStack> itemsToReturn = new ArrayList<>(Arrays.asList(inventory.getContents()));
+        itemsToReturn.remove(null);
+        player.getInventory().addItem(itemsToReturn.toArray(new ItemStack[0]));
     }
 
     //Ugly. Ugh. If you know a better way, please PR or at least tell me. BUT IT WORKS WOOOOOOOOOOOO YESSSSS

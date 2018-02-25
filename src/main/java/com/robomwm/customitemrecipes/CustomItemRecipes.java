@@ -133,6 +133,36 @@ public class CustomItemRecipes extends JavaPlugin
         }
     }
 
+    /**
+     * Checks if the item is a custom item, registered or not
+     * @param itemMeta
+     * @return
+     */
+    public boolean isCustomItem(ItemMeta itemMeta)
+    {
+        return extractCustomID(itemMeta) != null;
+    }
+
+    /**
+     * Returns id hidden inside the lore of the item, if present.
+     * @param itemStack
+     * @return name of custom item, null otherwise
+     */
+    public String extractCustomID(ItemMeta itemMeta)
+    {
+        if (!itemMeta.hasLore())
+            return null;
+        try
+        {
+            String[] version = revealText(itemMeta.getLore().get(itemMeta.getLore().size() - 1)).split(":");
+            return version[0];
+        }
+        catch (Throwable rock)
+        {
+            return null;
+        }
+    }
+
     //convenience methods
 
     public ShapedRecipe getShapedRecipe(JavaPlugin plugin, String name)

@@ -91,11 +91,27 @@ class CustomItems implements CommandExecutor
         if (!(sender instanceof Player))
             return false;
         Player player = (Player)sender;
+
+        if (args[0].equalsIgnoreCase("get"))
+        {
+            ItemStack itemStack = customItemRecipes.getItem(args[1]);
+            if (itemStack != null)
+            {
+                player.sendMessage("Attempted to give you item");
+                player.getInventory().addItem(itemStack);
+            }
+            else
+                player.sendMessage("Item id not registered.");
+            return true;
+        }
         ItemStack item = player.getInventory().getItemInMainHand();
-        if (!args[0].equalsIgnoreCase("get") && (item == null || item.getType() == Material.AIR))
+        if (item == null || item.getType() == Material.AIR)
             return false;
 
         ItemMeta itemMeta = item.getItemMeta();
+        if (customItemRecipes.isCustomItem(itemMeta))
+            itemMeta.getLore().remove(itemMeta.getLore().size() - 1);
+
 
         switch (args[0].toLowerCase())
         {
@@ -133,16 +149,6 @@ class CustomItems implements CommandExecutor
                 }
                 itemsYaml.set(args[1], item);
                 sender.sendMessage("Registered " + args[1]);
-                return true;
-            case "get":
-                ItemStack itemStack = customItemRecipes.getItem(args[1]);
-                if (itemStack != null)
-                {
-                    player.sendMessage("Attempted to give you item");
-                    player.getInventory().addItem(itemStack);
-                }
-                else
-                    player.sendMessage("Item id not registered.");
                 return true;
         }
 

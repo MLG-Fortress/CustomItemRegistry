@@ -71,11 +71,6 @@ class CustomRecipes implements CommandExecutor, Listener
         }
         recipesYaml = YamlConfiguration.loadConfiguration(recipesFile);
 
-        if (recipesYaml.getConfigurationSection("shaped") == null)
-            recipesYaml.createSection("shaped");
-        if (recipesYaml.getConfigurationSection("shapeless") == null)
-            recipesYaml.createSection("shapeless");
-
         for (String itemString : recipesYaml.getKeys(false))
         {
             ConfigurationSection shapedSection = recipesYaml.getConfigurationSection(itemString).getConfigurationSection("shaped");

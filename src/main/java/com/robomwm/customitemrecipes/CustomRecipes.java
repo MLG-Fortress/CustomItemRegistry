@@ -71,16 +71,15 @@ class CustomRecipes implements CommandExecutor, Listener
             }
         }
         recipesYaml = YamlConfiguration.loadConfiguration(recipesFile);
-        customItemRecipes.getServer().broadcastMessage("Starting to load recipes");
         customItemRecipes.getLogger().info("Starting to load recipes");
 
-        for (String itemString : recipesYaml.getKeys(false))
+        for (String itemString : recipesYaml.getKeys(false)) //for each item
         {
             customItemRecipes.getLogger().info("Loading recipes for " + itemString);
             ConfigurationSection shapedSection = recipesYaml.getConfigurationSection(itemString).getConfigurationSection("shaped");
-            if (shapedSection != null)
+            if (shapedSection != null) //for each shapedRecipe
             {
-                for (String recipes : shapedSection.getKeys(false))
+                for (String recipes : shapedSection.getKeys(false)) //for each recipe
                 {
                     ShapedRecipe shapedRecipe = customItemRecipes.getShapedRecipe(customItemRecipes, itemString);
                     if (shapedRecipe == null)
@@ -88,7 +87,7 @@ class CustomRecipes implements CommandExecutor, Listener
                         customItemRecipes.getLogger().warning(itemString + " is not a custom item, skipping...");
                         continue;
                     }
-                    ConfigurationSection section = shapedSection.getConfigurationSection(recipes);
+                    ConfigurationSection section = shapedSection.getConfigurationSection(recipes); //get recipe
                     shapedRecipe.shape(section.getString("shape").split(":"));
                     for (String key : section.getKeys(false))
                     {
@@ -115,7 +114,7 @@ class CustomRecipes implements CommandExecutor, Listener
 
             if (shapelessSection != null)
             {
-                for (String recipes : shapelessSection.getKeys(false))
+                for (String recipes : shapelessSection.getKeys(false)) //for each shapeless recipe
                 {
                     ShapelessRecipe shapelessRecipe = customItemRecipes.getShapelessRecipe(customItemRecipes, itemString);
                     if (shapelessRecipe == null)
@@ -123,7 +122,7 @@ class CustomRecipes implements CommandExecutor, Listener
                         customItemRecipes.getLogger().warning(itemString + " is not a custom item, skipping...");
                         continue;
                     }
-                    for (String key : shapelessSection.getStringList(recipes))
+                    for (String key : shapelessSection.getStringList(recipes)) //get ingredients list
                     {
                         try
                         {

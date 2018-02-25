@@ -146,11 +146,11 @@ class CustomRecipes implements CommandExecutor, Listener
         {
             case "shapeless":
                 recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPELESS, item, args[0]));
-                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.DISPENSER, "Input shaped recipe. Close when done."));
+                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.DISPENSER, "Input shapeless recipe."));
                 break;
             case "shaped":
                 recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPED, item, args[0]));
-                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.DISPENSER, "Input shapeless recipe. Close when done."));
+                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.DISPENSER, "Input shaped recipe."));
                 break;
             default:
                 return false;
@@ -185,7 +185,7 @@ class CustomRecipes implements CommandExecutor, Listener
                 char i = 'b';
                 for (ItemStack item : inventory.getContents())
                 {
-                    if (ingredients.containsKey(item.getType()))
+                    if (item == null || ingredients.containsKey(item.getType()))
                         continue;
                     ingredients.put(item.getType(), i++);
                 }

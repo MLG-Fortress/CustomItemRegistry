@@ -80,10 +80,10 @@ class CustomItems implements CommandExecutor
                     sender.sendMessage("/" + cmd.getLabel() + "name <name...> - Sets display name of item. Color codes accepted.");
                     break;
                 case "register":
-                    sender.sendMessage("/" + cmd.getLabel() + "register <name...> - Adds custom item to plugin with the given name as its ID, storing it and allowing recipes to be created for it. Color codes not accepted.");
+                    sender.sendMessage("/" + cmd.getLabel() + "register <name> - Adds custom item to plugin with the given name as its ID, storing it and allowing recipes to be created for it. Color codes not accepted.");
                     break;
                 case "get":
-                    sender.sendMessage("/" + cmd.getLabel() + "<get> <customitem name...> - Adds custom item to your inventory.");
+                    sender.sendMessage("/" + cmd.getLabel() + "<get> <customitem name> - Adds custom item to your inventory.");
                     break;
             }
             return true;
@@ -140,7 +140,7 @@ class CustomItems implements CommandExecutor
                 sender.sendMessage("Registered " + args[1]);
                 return true;
             case "get":
-                ItemStack itemStack = customItemRecipes.getItem(ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, " ")));
+                ItemStack itemStack = customItemRecipes.getItem(args[1]);
                 if (itemStack != null)
                 {
                     player.sendMessage("Attempted to give you item");

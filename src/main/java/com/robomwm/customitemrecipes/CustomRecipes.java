@@ -135,6 +135,12 @@ class CustomRecipes implements CommandExecutor, Listener
         }
     }
 
+    public void removeAllRecipes(String name)
+    {
+        recipesYaml.set(name, null);
+        save();
+    }
+
     public void saveShapedRecipe(String name, ShapedRecipe shapedRecipe)
     {
         ConfigurationSection itemSection = recipesYaml.getConfigurationSection(name);
@@ -146,7 +152,12 @@ class CustomRecipes implements CommandExecutor, Listener
         ConfigurationSection recipeSection = shapedSection.createSection(String.valueOf(System.currentTimeMillis()));
         recipeSection.set("shape", StringUtils.join(shapedRecipe.getShape(), ":"));
         for (char keyChar : shapedRecipe.getIngredientMap().keySet())
+        {
+            if (keyChar == 'a')
+                return;
             recipeSection.set(String.valueOf(keyChar), shapedRecipe.getIngredientMap().get(keyChar).getType().name()); //Yes not optimal but it's only being called 9 times max, and on command only.
+        }
+
         save();
     }
 

@@ -64,6 +64,12 @@ class CustomItems implements CommandExecutor
         }
     }
 
+    public void removeItem(String name)
+    {
+        itemsYaml.set(name, null);
+        save();
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
     {
@@ -72,7 +78,7 @@ class CustomItems implements CommandExecutor
         if (cmd.getName().equalsIgnoreCase("cremove"))
         {
             if (customItemRecipes.removeItem(args[0]))
-                sender.sendMessage("Removed " + args[1] + " and all of its recipes.");
+                sender.sendMessage("Removed " + args[0] + " and all of its recipes.");
             else
                 sender.sendMessage("Item is not registered");
             return true;

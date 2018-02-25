@@ -80,11 +80,18 @@ public class CustomItemRecipes extends JavaPlugin
         return getItemVersion(name, itemStack) > 0;
     }
 
+    /**
+     * Removes a registered item and its recipes
+     * @param name
+     * @return
+     */
     public boolean removeItem(String name)
     {
         ItemStack itemStack = items.remove(name);
         if (itemStack == null)
             return false;
+        customItems.removeItem(name);
+        customRecipes.removeAllRecipes(name);
         List<Recipe> existingRecipes = new LinkedList<>();
         Iterator<Recipe> recipeIterator = getServer().recipeIterator();
         while (recipeIterator.hasNext())

@@ -11,6 +11,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -43,7 +44,14 @@ public class CustomItemRecipes extends JavaPlugin
         customRecipes = new CustomRecipes(this);
         getCommand("citem").setExecutor(customItems);
         getCommand("cremove").setExecutor(customItems);
-        getCommand("crecipe").setExecutor(customRecipes);
+        new BukkitRunnable() //Allows for loading recipes of items registered via other plugins
+        {
+            @Override
+            public void run()
+            {
+                getCommand("crecipe").setExecutor(customRecipes);
+            }
+        }.runTask(this);
     }
 
     public void onDisable()

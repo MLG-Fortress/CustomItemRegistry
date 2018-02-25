@@ -197,17 +197,20 @@ class CustomRecipes implements CommandExecutor, Listener
         Player player = (Player)sender;
         ItemStack item = customItemRecipes.getItem(args[1]);
         if (item == null)
+        {
+            sender.sendMessage(args[1] + " is not registered. Use /citem to register an item.");
             return false;
+        }
 
         switch (args[0].toLowerCase())
         {
             case "shapeless":
                 recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPELESS, item, args[1]));
-                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.DISPENSER, "Input shapeless recipe."));
+                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.DISPENSER, "Input shapeless recipe"));
                 break;
             case "shaped":
                 recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPED, item, args[1]));
-                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.DISPENSER, "Input shaped recipe."));
+                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.DISPENSER, "Input shaped recipe"));
                 break;
             default:
                 return false;

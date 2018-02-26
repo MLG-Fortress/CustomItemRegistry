@@ -90,6 +90,7 @@ public class CustomItemRecipes extends JavaPlugin
 
     /**
      * Removes a registered item and its recipes
+     * Since Server#clearRecipes causes issues, this will restore any removed vanilla recipes
      * @param name
      * @return
      */
@@ -109,14 +110,27 @@ public class CustomItemRecipes extends JavaPlugin
                 continue;
             existingRecipes.add(recipe);
         }
-        getServer().clearRecipes();
+        getServer().resetRecipes();
+        //So, I can either catch and ignore IllegalStateException when adding vanilla recipes (duplicate recipe)
+        //Or get a new iterator (now only containing vanilla recipes) and remove the vanilla recipes from the List.
+        recipeIterator = getServer().recipeIterator();
+        while (recipeIterator.hasNext())
+            existingRecipes.remove(recipeIterator.next());
         for (Recipe recipe : existingRecipes)
             getServer().addRecipe(recipe);
         return true;
     }
 
-    public void removeRecipe(Set<Material> materials)
+    /**
+     * Removes vanilla recipes, only if no players are online
+     * Attempting to call Server#clearRecipes while players are online will cause the server to have issues saving data for these players.
+     * @param materials
+     * @return
+     */
+    public boolean removeRecipe(Set<Material> materials)
     {
+        if (getServer().getOnlinePlayers().size() > 0)
+            return false;
         List<Recipe> existingRecipes = new LinkedList<>();
         Iterator<Recipe> recipeIterator = getServer().recipeIterator();
         while (recipeIterator.hasNext())
@@ -129,6 +143,7 @@ public class CustomItemRecipes extends JavaPlugin
         getServer().clearRecipes();
         for (Recipe recipe : existingRecipes)
             getServer().addRecipe(recipe);
+        return true;
     }
 
     public int getItemVersion(String name, ItemStack itemStack)

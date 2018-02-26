@@ -29,6 +29,6 @@ permissions:
     customitemrecipes.crecipe:
         description: Permission to /crecipe
         default: op
-    customitemrecipes.crecipe:
+    customitemrecipes.cremove:
         description: Permission to /cremove
         default: op

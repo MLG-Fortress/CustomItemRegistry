@@ -166,6 +166,8 @@ class CustomItems implements CommandExecutor
                 itemsYaml.set(args[1], item);
                 sender.sendMessage("Registered " + args[1]);
                 return true;
+            default:
+                return false;
         }
 
         item.setItemMeta(itemMeta);

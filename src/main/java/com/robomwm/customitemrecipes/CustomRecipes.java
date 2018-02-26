@@ -295,6 +295,9 @@ class CustomRecipes implements CommandExecutor, Listener
                     shapelessRecipe.addIngredient(1, itemStack.getType());
                 }
 
+                if (shapelessRecipe.getIngredientList().isEmpty())
+                    return;
+
                 //Add and save to file
                 if (!customItemRecipes.getServer().addRecipe(shapelessRecipe))
                 {

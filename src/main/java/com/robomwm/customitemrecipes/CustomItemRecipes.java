@@ -1,9 +1,9 @@
 package com.robomwm.customitemrecipes;
 
+import com.robomwm.customitemrecipes.event.ResetRecipeEvent;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -15,7 +15,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -101,48 +103,15 @@ public class CustomItemRecipes extends JavaPlugin
             return false;
         customItems.removeItem(name);
         customRecipes.removeAllRecipes(name);
-        List<Recipe> existingRecipes = new LinkedList<>();
+        Set<Recipe> recipesToRemove = new HashSet<>();
         Iterator<Recipe> recipeIterator = getServer().recipeIterator();
         while (recipeIterator.hasNext())
         {
             Recipe recipe = recipeIterator.next();
             if (recipe.getResult().isSimilar(itemStack))
-                continue;
-            existingRecipes.add(recipe);
+                recipesToRemove.add(recipe);
         }
-        getServer().resetRecipes();
-        //So, I can either catch and ignore IllegalStateException when adding vanilla recipes (duplicate recipe)
-        //Or get a new iterator (now only containing vanilla recipes) and remove the vanilla recipes from the List.
-        recipeIterator = getServer().recipeIterator();
-        while (recipeIterator.hasNext())
-            existingRecipes.remove(recipeIterator.next());
-        for (Recipe recipe : existingRecipes)
-            getServer().addRecipe(recipe);
-        return true;
-    }
-
-    /**
-     * Removes vanilla recipes, only if no players are online
-     * Attempting to call Server#clearRecipes while players are online will cause the server to have issues saving data for these players.
-     * @param materials
-     * @return
-     */
-    public boolean removeRecipe(Set<Material> materials)
-    {
-        if (getServer().getOnlinePlayers().size() > 0)
-            return false;
-        List<Recipe> existingRecipes = new LinkedList<>();
-        Iterator<Recipe> recipeIterator = getServer().recipeIterator();
-        while (recipeIterator.hasNext())
-        {
-            Recipe recipe = recipeIterator.next();
-            if (materials.contains(recipe.getResult().getType()))
-                continue;
-            existingRecipes.add(recipe);
-        }
-        getServer().clearRecipes();
-        for (Recipe recipe : existingRecipes)
-            getServer().addRecipe(recipe);
+        safelyRemoveRecipes(recipesToRemove);
         return true;
     }
 
@@ -195,6 +164,71 @@ public class CustomItemRecipes extends JavaPlugin
     }
 
     //convenience methods
+
+    /**
+     * Attempts to safely removes a recipe. Will not remove vanilla recipes unless nobody is on the server.
+     * Will call ResetRecipesEvent if it calls Server#resetRecipe so plugins are aware that vanilla recipes have been restored
+     * @see ResetRecipeEvent
+     * @param recipesToRemove
+     * @return
+     */
+    public void safelyRemoveRecipes(Collection<Recipe> recipesToRemove)
+    {
+        if (removeRecipes(recipesToRemove))
+            return;
+        List<Recipe> existingRecipes = new LinkedList<>();
+        Iterator<Recipe> recipeIterator = getServer().recipeIterator();
+        while (recipeIterator.hasNext())
+        {
+            Recipe recipe = recipeIterator.next();
+            if (recipesToRemove.contains(recipe))
+                continue;
+            existingRecipes.add(recipe);
+        }
+
+        getServer().resetRecipes();
+        getServer().getPluginManager().callEvent(new ResetRecipeEvent());
+
+        /*Server#resetRecipes apparently "reinitializes" all vanilla recipes
+        So none of the recipes will Object#equals the "old" ones.
+        Thus, we use this nice try-catch to ignore the "duplicate recipe" exception
+        (And no, not all recipes implement NamespacedKey)
+         */
+        for (Recipe recipe : existingRecipes)
+        {
+            try
+            {
+                getServer().addRecipe(recipe);
+            }
+            catch (IllegalStateException ignored){} //vanilla recipe
+        }
+        return;
+    }
+
+    /**
+     * Removes vanilla recipes, only if no players are online
+     * Attempting to call Server#clearRecipes while players are online will cause the server to have issues saving data for these players.
+     * @param recipesToRemove
+     * @return
+     */
+    public boolean removeRecipes(Collection<Recipe> recipesToRemove)
+    {
+        if (getServer().getOnlinePlayers().size() > 0)
+            return false;
+        List<Recipe> existingRecipes = new LinkedList<>();
+        Iterator<Recipe> recipeIterator = getServer().recipeIterator();
+        while (recipeIterator.hasNext())
+        {
+            Recipe recipe = recipeIterator.next();
+            if (recipesToRemove.contains(recipe))
+                continue;
+            existingRecipes.add(recipe);
+        }
+        getServer().clearRecipes();
+        for (Recipe recipe : existingRecipes)
+            getServer().addRecipe(recipe);
+        return true;
+    }
 
     public ShapedRecipe getShapedRecipe(JavaPlugin plugin, String name)
     {

@@ -103,15 +103,16 @@ public class CustomItemRecipes extends JavaPlugin
             return false;
         customItems.removeItem(name);
         customRecipes.removeAllRecipes(name);
-        Set<Recipe> recipesToRemove = new HashSet<>();
+        List<Recipe> recipesToRemove = new LinkedList<>();
         Iterator<Recipe> recipeIterator = getServer().recipeIterator();
         while (recipeIterator.hasNext())
         {
             Recipe recipe = recipeIterator.next();
             if (recipe.getResult().isSimilar(itemStack))
-                recipesToRemove.add(recipe);
+                continue;
+            recipesToRemove.add(recipe);
         }
-        safelyRemoveRecipes(recipesToRemove);
+        removeAllRecipesExceptFor(recipesToRemove);
         return true;
     }
 
@@ -166,35 +167,32 @@ public class CustomItemRecipes extends JavaPlugin
     //convenience methods
 
     /**
-     * Attempts to safely removes a recipe. Will not remove vanilla recipes unless nobody is on the server.
-     * Will call ResetRecipesEvent if it calls Server#resetRecipe so plugins are aware that vanilla recipes have been restored
-     * @see ResetRecipeEvent
-     * @param recipesToRemove
+     * Removes all recipes, then re-adds the recipes specified in the Collection.
+     * If players are on the server, vanilla recipes will be restored as well as ResetRecipeEvent being called to signal plugins of this.
+     *
+     * Attempting to call Server#clearRecipes while players are online will cause the server to have issues saving data for these players.
+     * @param recipesToKeep Collection of recipes to add after removing all recipes
      * @return
      */
-    public void safelyRemoveRecipes(Collection<Recipe> recipesToRemove)
+    public void removeAllRecipesExceptFor(Collection<Recipe> recipesToKeep)
     {
-        if (removeRecipes(recipesToRemove))
-            return;
-        List<Recipe> existingRecipes = new LinkedList<>();
-        Iterator<Recipe> recipeIterator = getServer().recipeIterator();
-        while (recipeIterator.hasNext())
+        if (getServer().getOnlinePlayers().size() > 0)
         {
-            Recipe recipe = recipeIterator.next();
-            if (recipesToRemove.contains(recipe))
-                continue;
-            existingRecipes.add(recipe);
+            getServer().resetRecipes();
+            getServer().getPluginManager().callEvent(new ResetRecipeEvent());
         }
+        else
+            getServer().clearRecipes();
 
-        getServer().resetRecipes();
-        getServer().getPluginManager().callEvent(new ResetRecipeEvent());
+        if (recipesToKeep == null)
+            return;
 
         /*Server#resetRecipes apparently "reinitializes" all vanilla recipes
         So none of the recipes will Object#equals the "old" ones.
         Thus, we use this nice try-catch to ignore the "duplicate recipe" exception
         (And no, not all recipes implement NamespacedKey)
          */
-        for (Recipe recipe : existingRecipes)
+        for (Recipe recipe : recipesToKeep)
         {
             try
             {
@@ -203,31 +201,6 @@ public class CustomItemRecipes extends JavaPlugin
             catch (IllegalStateException ignored){} //vanilla recipe
         }
         return;
-    }
-
-    /**
-     * Removes vanilla recipes, only if no players are online
-     * Attempting to call Server#clearRecipes while players are online will cause the server to have issues saving data for these players.
-     * @param recipesToRemove
-     * @return
-     */
-    public boolean removeRecipes(Collection<Recipe> recipesToRemove)
-    {
-        if (getServer().getOnlinePlayers().size() > 0)
-            return false;
-        List<Recipe> existingRecipes = new LinkedList<>();
-        Iterator<Recipe> recipeIterator = getServer().recipeIterator();
-        while (recipeIterator.hasNext())
-        {
-            Recipe recipe = recipeIterator.next();
-            if (recipesToRemove.contains(recipe))
-                continue;
-            existingRecipes.add(recipe);
-        }
-        getServer().clearRecipes();
-        for (Recipe recipe : existingRecipes)
-            getServer().addRecipe(recipe);
-        return true;
     }
 
     public ShapedRecipe getShapedRecipe(JavaPlugin plugin, String name)

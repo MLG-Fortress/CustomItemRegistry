@@ -99,7 +99,7 @@ class CustomRecipes implements CommandExecutor, Listener
                         char keyChar = key.toCharArray()[0];
                         try
                         {
-                            shapedRecipe.setIngredient(keyChar, Material.getMaterial(section.getString(key)));
+                            shapedRecipe.setIngredient(keyChar, Material.getMaterial(section.getString(key)), Short.MAX_VALUE);
                         }
                         catch (Throwable rock)
                         {
@@ -130,7 +130,7 @@ class CustomRecipes implements CommandExecutor, Listener
                     {
                         try
                         {
-                            shapelessRecipe.addIngredient(1, Material.getMaterial(key));
+                            shapelessRecipe.addIngredient(1, Material.getMaterial(key), Short.MAX_VALUE);
                         }
                         catch (Throwable rock)
                         {
@@ -274,7 +274,7 @@ class CustomRecipes implements CommandExecutor, Listener
                 {
                     if (material == null)
                         continue;
-                    shapedRecipe.setIngredient(ingredients.get(material), material);
+                    shapedRecipe.setIngredient(ingredients.get(material), material, Short.MAX_VALUE);
                     player.sendMessage(ingredients.get(material).toString() + " = " + material.toString());
                 }
 
@@ -292,7 +292,7 @@ class CustomRecipes implements CommandExecutor, Listener
                 {
                     if (itemStack == null)
                         continue;
-                    shapelessRecipe.addIngredient(1, itemStack.getType());
+                    shapelessRecipe.addIngredient(1, itemStack.getType(), Short.MAX_VALUE);
                 }
 
                 if (shapelessRecipe.getIngredientList().isEmpty())

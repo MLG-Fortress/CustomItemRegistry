@@ -1,6 +1,5 @@
 package com.robomwm.customitemrecipes;
 
-import com.robomwm.customitemrecipes.event.ResetRecipeEvent;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.bukkit.ChatColor;
@@ -17,14 +16,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
 /**
@@ -38,14 +34,17 @@ public class CustomItemRecipes extends JavaPlugin
 
     private CustomItems customItems;
     private CustomRecipes customRecipes;
+    private RecipeBlocker recipeBlocker;
 
     public void onEnable()
     {
         saveConfig();
         customItems = new CustomItems(this);
         customRecipes = new CustomRecipes(this);
+        recipeBlocker = new RecipeBlocker(this);
         getCommand("citem").setExecutor(customItems);
         getCommand("cremove").setExecutor(customItems);
+        getServer().getPluginManager().registerEvents(recipeBlocker, this);
         new BukkitRunnable() //Allows for loading recipes of items registered via other plugins
         {
             @Override
@@ -54,6 +53,11 @@ public class CustomItemRecipes extends JavaPlugin
                 getCommand("crecipe").setExecutor(customRecipes);
             }
         }.runTask(this);
+    }
+
+    public RecipeBlocker getRecipeBlocker()
+    {
+        return recipeBlocker;
     }
 
     public void onDisable()
@@ -109,10 +113,9 @@ public class CustomItemRecipes extends JavaPlugin
         {
             Recipe recipe = recipeIterator.next();
             if (recipe.getResult().isSimilar(itemStack))
-                continue;
-            recipesToRemove.add(recipe);
+                recipesToRemove.add(recipe);
         }
-        removeAllRecipesExceptFor(recipesToRemove);
+        recipeBlocker.addRecipes(recipesToRemove);
         return true;
     }
 
@@ -166,55 +169,24 @@ public class CustomItemRecipes extends JavaPlugin
 
     //convenience methods
 
-    /**
-     * Removes all recipes, then re-adds the recipes specified in the Collection.
-     * If players are on the server, vanilla recipes will be restored as well as ResetRecipeEvent being called to signal plugins of this.
-     *
-     * Attempting to call Server#clearRecipes while players are online will cause the server to have issues saving data for these players.
-     * @param recipesToKeep Collection of recipes to add after removing all recipes
-     * @return
-     */
-    public void removeAllRecipesExceptFor(Collection<Recipe> recipesToKeep)
-    {
-        if (getServer().getOnlinePlayers().size() > 0)
-        {
-            getServer().resetRecipes();
-            getServer().getPluginManager().callEvent(new ResetRecipeEvent());
-        }
-        else
-            getServer().clearRecipes();
 
-        if (recipesToKeep == null)
-            return;
 
-        /*Server#resetRecipes apparently "reinitializes" all vanilla recipes
-        So none of the recipes will Object#equals the "old" ones.
-        Thus, we use this nice try-catch to ignore the "duplicate recipe" exception
-        (And no, not all recipes implement NamespacedKey)
-         */
-        for (Recipe recipe : recipesToKeep)
-        {
-            try
-            {
-                getServer().addRecipe(recipe);
-            }
-            catch (IllegalStateException ignored){} //vanilla recipe
-        }
-        return;
-    }
+    //Reduce "failed to load recipe" warning on join after a server restart via maintaining a consistent order to keys.
+    //Not guaranteed if player removes recipes in-game, but will only occur once after a restart rather than after every restart.
+    int i = 0;
 
     public ShapedRecipe getShapedRecipe(JavaPlugin plugin, String name)
     {
         if (!items.containsKey(name))
             return null;
-        return new ShapedRecipe(new NamespacedKey(plugin, name + ":" + Integer.toString(ThreadLocalRandom.current().nextInt())), items.get(name));
+        return new ShapedRecipe(new NamespacedKey(plugin, name + ":" + Integer.toString(i++)), items.get(name));
     }
 
     public ShapelessRecipe getShapelessRecipe(JavaPlugin plugin, String name)
     {
         if (!items.containsKey(name))
             return null;
-        return new ShapelessRecipe(new NamespacedKey(plugin, name + ":" + Integer.toString(ThreadLocalRandom.current().nextInt())), items.get(name));
+        return new ShapelessRecipe(new NamespacedKey(plugin, name + ":" + Integer.toString(i++)), items.get(name));
     }
 
     public ItemStack setName(ItemStack itemStack, String name)

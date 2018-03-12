@@ -133,24 +133,41 @@ class CustomItems implements CommandExecutor
         {
             case "lore":
                 List<String> lore;
+                if (itemMeta.hasLore())
+                    lore = itemMeta.getLore();
+                else
+                    lore = new ArrayList<>();
                 switch(args[1].toLowerCase())
                 {
                     case "remove":
                     case "clear":
                         itemMeta.setLore(null);
+                        sender.sendMessage("Lore cleared");
                         break;
+                    case "set":
+                        int line;
+                        try
+                        {
+                            line = Integer.parseInt(args[2]);
+                            lore.remove(line);
+                            args[0] = null;
+                            args[1] = null;
+                            args[2] = null;
+                            lore.add(line, ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, " ").substring(3)));
+                            sender.sendMessage("Set " + line);
+                            break;
+                        }
+                        catch (Throwable rock){}
                     case "add":
-                        if (itemMeta.hasLore())
-                            lore = itemMeta.getLore();
-                        else
-                            lore = new ArrayList<>();
                         args[0] = null;
                         args[1] = null;
                         lore.add(ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, " ").substring(2)));
                         itemMeta.setLore(lore);
+                        sender.sendMessage("Added lore");
                         break;
                     default:
-                        sender.sendMessage("/" + cmd.getLabel() + " lore <clear/add> <lore...>");
+                        sender.sendMessage("/" + cmd.getLabel() + " lore <clear/add> <lore...> or /lore set <line> <lore...>");
+                        return true;
                 }
                 break;
             case "name":
@@ -160,9 +177,14 @@ class CustomItems implements CommandExecutor
             case "register":
                 if (!customItemRecipes.registerItem(item, args[1]))
                 {
-                    sender.sendMessage("Already registered");
+                    sender.sendMessage("Already registered, use /reregister to force");
                     return false;
                 }
+                itemsYaml.set(args[1], item);
+                sender.sendMessage("Registered " + args[1]);
+                return true;
+            case "reregister":
+                customItemRecipes.registerItem(item, args[1], 1, true);
                 itemsYaml.set(args[1], item);
                 sender.sendMessage("Registered " + args[1]);
                 return true;

@@ -4,6 +4,7 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
@@ -73,7 +74,12 @@ public class CustomItemRecipes extends JavaPlugin
 
     public boolean registerItem(ItemStack item, String name, int version)
     {
-        if (items.containsKey(name))
+        return registerItem(item, name, version, false);
+    }
+
+    public boolean registerItem(ItemStack item, String name, int version, boolean force)
+    {
+        if (items.containsKey(name) && !force)
             return false;
         ItemStack itemStack = item.clone();
         setItemVersion(itemStack, name, version);

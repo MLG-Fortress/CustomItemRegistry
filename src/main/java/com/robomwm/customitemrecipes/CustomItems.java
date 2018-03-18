@@ -128,6 +128,7 @@ class CustomItems implements CommandExecutor
         if (customItemRecipes.isCustomItem(itemMeta))
             itemMeta.getLore().remove(itemMeta.getLore().size() - 1);
 
+        int line;
 
         switch (args[0].toLowerCase())
         {
@@ -144,8 +145,13 @@ class CustomItems implements CommandExecutor
                         itemMeta.setLore(null);
                         sender.sendMessage("Lore cleared");
                         break;
+                    case "delete":
+                        line = Integer.parseInt(args[2]);
+                        lore.remove(line);
+                        itemMeta.setLore(lore);
+                        sender.sendMessage("Set " + line);
+                        break;
                     case "set":
-                        int line;
                         try
                         {
                             line = Integer.parseInt(args[2]);
@@ -155,6 +161,7 @@ class CustomItems implements CommandExecutor
                             args[2] = null;
                             lore.add(line, ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, " ").substring(3)));
                             sender.sendMessage("Set " + line);
+                            itemMeta.setLore(lore);
                             break;
                         }
                         catch (Throwable rock){}

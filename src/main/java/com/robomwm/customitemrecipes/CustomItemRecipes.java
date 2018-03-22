@@ -2,9 +2,10 @@ package com.robomwm.customitemrecipes;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
@@ -13,9 +14,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import javax.annotation.Nonnull;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -46,14 +47,7 @@ public class CustomItemRecipes extends JavaPlugin
         getCommand("citem").setExecutor(customItems);
         getCommand("cremove").setExecutor(customItems);
         getServer().getPluginManager().registerEvents(recipeBlocker, this);
-        new BukkitRunnable() //Allows for loading recipes of items registered via other plugins
-        {
-            @Override
-            public void run()
-            {
-                getCommand("crecipe").setExecutor(customRecipes);
-            }
-        }.runTask(this);
+        getCommand("crecipe").setExecutor(customRecipes);
     }
 
     public RecipeBlocker getRecipeBlocker()
@@ -66,23 +60,31 @@ public class CustomItemRecipes extends JavaPlugin
         customItems.save();
         customRecipes.save();
     }
-    
+
+    /**
+     * Register an item with the given name as its string ID
+     * @param item the ItemStack to register
+     * @param name the string ID of this item
+     * @return true if successfully registered, false if the specified string ID is already registered.
+     */
     public boolean registerItem(ItemStack item, String name)
     {
-        return registerItem(item, name, 1);
+        return registerItem(item, name, false);
     }
 
-    public boolean registerItem(ItemStack item, String name, int version)
-    {
-        return registerItem(item, name, version, false);
-    }
-
-    public boolean registerItem(ItemStack item, String name, int version, boolean force)
+    /**
+     * Register an item with the given name as its string ID
+     * @param item the ItemStack to register
+     * @param name the string ID of this item
+     * @param force Whether we should overwrite an existing custom item, if present
+     * @return true if successfully registered, false if the specified string ID is already registered. Always succeeds if force is true.
+     */
+    public boolean registerItem(ItemStack item, String name, boolean force)
     {
         if (items.containsKey(name) && !force)
             return false;
         ItemStack itemStack = item.clone();
-        setItemVersion(itemStack, name, version);
+        brandCustomItemID(itemStack, name);
         items.put(name, itemStack);
         return true;
     }
@@ -94,17 +96,15 @@ public class CustomItemRecipes extends JavaPlugin
         return items.get(name).clone();
     }
 
-    //Does a straight "string id" comparison
-    public boolean isItem(String name, ItemStack itemStack)
-    {
-        return getItemVersion(name, itemStack) > 0;
-    }
-
     /**
-     * Removes a registered item and its recipes
-     * Since Server#clearRecipes causes issues, this will restore any removed vanilla recipes
-     * @param name
-     * @return
+     * Removes a registered item and its recipes.
+     *
+     * Recipes will only be removed if no players are online.
+     * Otherwise it will wait until all players are offline before removing, and block crafting of the item until then.
+     * @see RecipeBlocker
+     *
+     * @param name String ID of custom item to remove.
+     * @return Whether the item was previously registered.
      */
     public boolean removeItem(String name)
     {
@@ -125,36 +125,38 @@ public class CustomItemRecipes extends JavaPlugin
         return true;
     }
 
-    public int getItemVersion(String name, ItemStack itemStack)
+    /**
+     * Checks if the specified ItemStack matches the specified registered custom ItemStack
+     *
+     * @implNote This compares types in addition to the branded ID.
+     *
+     * @param name The string ID of the registered item.
+     * @param itemStack The ItemStack to check. Item must not be null or of type AIR.
+     * @return true if custom item matches registered item name
+     */
+    public boolean isItem(String name, @Nonnull ItemStack itemStack)
     {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (!itemMeta.hasLore())
-            return 0;
-        try
-        {
-            String[] version = revealText(itemMeta.getLore().get(itemMeta.getLore().size() - 1)).split(":");
-            if (!version[0].equalsIgnoreCase(name))
-                return 0;
-            return Integer.valueOf(version[1]);
-        }
-        catch (Throwable rock)
-        {
-            return 0;
-        }
+        Validate.isTrue(itemStack.getType() != Material.AIR, "Cannot check AIR (contains no ItemMetadata).");
+        ItemStack customStack = items.get(name);
+        if (customStack == null || customStack.getType() != itemStack.getType())
+            return false;
+        String extractedName = extractCustomID(itemStack.getItemMeta());
+        return extractedName != null && extractedName.equals(name);
     }
 
     /**
-     * Checks if the item is a custom item, registered or not
+     * Checks if the item is a registered, custom item
      * @param itemMeta
      * @return
      */
     public boolean isCustomItem(ItemMeta itemMeta)
     {
-        return extractCustomID(itemMeta) != null;
+        String name = extractCustomID(itemMeta);
+        return name != null && items.containsKey(name);
     }
 
     /**
-     * Returns id hidden inside the lore of the item, if present.
+     * Returns string ID hidden inside the lore of the item, if present.
      * @param itemMeta
      * @return name of custom item, null otherwise
      */
@@ -164,8 +166,7 @@ public class CustomItemRecipes extends JavaPlugin
             return null;
         try
         {
-            String[] version = revealText(itemMeta.getLore().get(itemMeta.getLore().size() - 1)).split(":");
-            return version[0];
+            return revealText(itemMeta.getLore().get(itemMeta.getLore().size() - 1));
         }
         catch (Throwable rock)
         {
@@ -175,12 +176,16 @@ public class CustomItemRecipes extends JavaPlugin
 
     //convenience methods
 
-
-
     //Reduce "failed to load recipe" warning on join after a server restart via maintaining a consistent order to keys.
     //Not guaranteed if player removes recipes in-game, but will only occur once after a restart rather than after every restart.
-    int i = 0;
+    private int i = 0;
 
+    /**
+     * Get a new shapedRecipe object for the given customItem string
+     * @param plugin
+     * @param name
+     * @return a new ShapedRecipe, or null if the custom item string id is not registered.
+     */
     public ShapedRecipe getShapedRecipe(JavaPlugin plugin, String name)
     {
         if (!items.containsKey(name))
@@ -188,6 +193,12 @@ public class CustomItemRecipes extends JavaPlugin
         return new ShapedRecipe(new NamespacedKey(plugin, name + ":" + Integer.toString(i++)), items.get(name));
     }
 
+    /**
+     * Get a new shapelessRecipe object for the given customItem string
+     * @param plugin
+     * @param name
+     * @return a new ShapelessRecipe, or null if the custom item string id is not registered.
+     */
     public ShapelessRecipe getShapelessRecipe(JavaPlugin plugin, String name)
     {
         if (!items.containsKey(name))
@@ -195,36 +206,20 @@ public class CustomItemRecipes extends JavaPlugin
         return new ShapelessRecipe(new NamespacedKey(plugin, name + ":" + Integer.toString(i++)), items.get(name));
     }
 
-    public ItemStack setName(ItemStack itemStack, String name)
-    {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(name);
-        itemStack.setItemMeta(itemMeta);
-        return itemStack;
-    }
-
-    public ItemStack loreize(ItemStack itemStack, List<String> lore)
-    {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setLore(lore);
-        itemStack.setItemMeta(itemMeta);
-        return itemStack;
-    }
-
     //internal
 
-    private void setItemVersion(ItemStack itemStack, String name, int version)
+    //Version is no longer used - include version in name if you'd like to "version" your custom items.
+    private void brandCustomItemID(ItemStack itemStack, String name)
     {
         ItemMeta itemMeta = itemStack.getItemMeta();
-        int currentVersion = getItemVersion(name, itemStack);
         List<String> lore;
         if (!itemMeta.hasLore())
             lore = new ArrayList<>();
         else
             lore = itemMeta.getLore();
-        if (currentVersion != 0)
+        if (extractCustomID(itemMeta) != null)
             lore.remove(lore.size() - 1);
-        lore.add(hideText(name + ":" + version));
+        lore.add(hideText(name));
         itemMeta.setLore(lore);
         itemStack.setItemMeta(itemMeta);
     }

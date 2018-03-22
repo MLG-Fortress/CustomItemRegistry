@@ -125,7 +125,7 @@ class CustomItems implements CommandExecutor
             return false;
 
         ItemMeta itemMeta = item.getItemMeta();
-        if (customItemRecipes.isCustomItem(itemMeta))
+        if (customItemRecipes.extractCustomID(itemMeta) != null)
             itemMeta.getLore().remove(itemMeta.getLore().size() - 1);
 
         int line;
@@ -191,7 +191,7 @@ class CustomItems implements CommandExecutor
                 sender.sendMessage("Registered " + args[1]);
                 return true;
             case "reregister":
-                customItemRecipes.registerItem(item, args[1], 1, true);
+                customItemRecipes.registerItem(item, args[1], true);
                 itemsYaml.set(args[1], item);
                 sender.sendMessage("Registered " + args[1]);
                 return true;

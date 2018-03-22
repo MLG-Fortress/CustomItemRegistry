@@ -25,6 +25,7 @@ import java.util.Set;
  *
  * Blocks crafting table recipes only.
  * Primarily used to "remove" recipes while players are in-game since it's not safe to do so otherwise.
+ * Queues blocked recipes for removal when all players have left the server.
  *
  * @author RoboMWM
  */
@@ -59,6 +60,10 @@ public class RecipeBlocker implements Listener
             event.getInventory().setResult(null);
     }
 
+    /**
+     * Disables crafting of the specified recipes, and queues them for removal
+     * @param recipes The recipes to block
+     */
     public void addRecipes(Collection<Recipe> recipes)
     {
         for (Recipe recipe : recipes)
@@ -92,7 +97,7 @@ public class RecipeBlocker implements Listener
             {
                 Recipe recipe = recipeIterator.next();
 
-                if (!(recipe instanceof Keyed)) //Keep alll non-keyed (non-craftingtable) recipes
+                if (!(recipe instanceof Keyed)) //Keep all non-keyed (non-crafting table) recipes
                 {
                     recipesToKeep.add(recipe);
                     continue;

@@ -189,11 +189,13 @@ class CustomItems implements CommandExecutor
                 }
                 itemsYaml.set(args[1], item);
                 sender.sendMessage("Registered " + args[1]);
+                save();
                 return true;
             case "reregister":
                 customItemRecipes.registerItem(item, args[1], true);
                 itemsYaml.set(args[1], item);
                 sender.sendMessage("Registered " + args[1]);
+                save();
                 return true;
             default:
                 return false;

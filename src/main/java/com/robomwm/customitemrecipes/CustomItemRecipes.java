@@ -37,10 +37,16 @@ public class CustomItemRecipes extends JavaPlugin
     private CustomItems customItems;
     private CustomRecipes customRecipes;
     private RecipeBlocker recipeBlocker;
+    private boolean useHiddenID;
+    private final String visibleIDPrefix = ChatColor.GRAY + "CID: ";
 
     public void onEnable()
     {
         saveConfig();
+        getConfig().addDefault("useHiddenID", true);
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+        useHiddenID = getConfig().getBoolean("useHiddenID");
         customItems = new CustomItems(this);
         customRecipes = new CustomRecipes(this);
         recipeBlocker = new RecipeBlocker(this);
@@ -164,6 +170,15 @@ public class CustomItemRecipes extends JavaPlugin
     {
         if (!itemMeta.hasLore())
             return null;
+
+        if (!useHiddenID)
+        {
+            String line = itemMeta.getLore().get(itemMeta.getLore().size() - 1);
+            if (!line.startsWith(visibleIDPrefix))
+                return null;
+            return line.substring(7);
+        }
+
         try
         {
             return revealText(itemMeta.getLore().get(itemMeta.getLore().size() - 1));
@@ -218,8 +233,11 @@ public class CustomItemRecipes extends JavaPlugin
         else
             lore = itemMeta.getLore();
         if (extractCustomID(itemMeta) != null)
-            lore.remove(lore.size() - 1);
-        lore.add(hideText(name));
+            lore.remove(itemMeta.getLore().size() - 1);
+        if (useHiddenID)
+            lore.add(itemMeta.getLore().size() - 1, hideText(name));
+        else
+            lore.add(itemMeta.getLore().size() - 1, visibleIDPrefix + name);
         itemMeta.setLore(lore);
         itemStack.setItemMeta(itemMeta);
     }

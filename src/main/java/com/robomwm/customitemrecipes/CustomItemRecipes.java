@@ -62,12 +62,6 @@ public class CustomItemRecipes extends JavaPlugin
         return recipeBlocker;
     }
 
-    public void onDisable()
-    {
-        customItems.save();
-        customRecipes.save();
-    }
-
     /**
      * Register an item with the given name as its string ID
      * @param item the ItemStack to register
@@ -88,7 +82,7 @@ public class CustomItemRecipes extends JavaPlugin
      */
     public boolean registerItem(@Nonnull ItemStack item, String name, boolean force)
     {
-        Validate.isTrue(item.getType() != Material.AIR, "Cannot register an item with type AIR");
+        Validate.isTrue(item.getType() != Material.AIR, "Cannot register an item of type AIR");
         if (items.containsKey(name) && !force)
             return false;
         ItemStack itemStack = item.clone();

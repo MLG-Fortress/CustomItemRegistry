@@ -100,7 +100,7 @@ class CustomItems implements CommandExecutor
             itemMeta.setLore(lore);
             item.setItemMeta(itemMeta);
         }
-        
+
         if (args.length < 2)
         {
             switch(args[0].toLowerCase())
@@ -207,14 +207,14 @@ class CustomItems implements CommandExecutor
                     sender.sendMessage("Already registered, use /citem reregister to force");
                     return false;
                 }
-                itemsYaml.set(args[1], item);
+                itemsYaml.set(args[1], item.clone());
                 sender.sendMessage("Registered " + args[1]);
                 sender.sendMessage("Use /citem get " + args[1] + " to obtain the registered item.");
                 save();
                 return true;
             case "reregister":
                 customItemRecipes.registerItem(item, args[1], true);
-                itemsYaml.set(args[1], item);
+                itemsYaml.set(args[1], item.clone());
                 sender.sendMessage("Registered " + args[1]);
                 sender.sendMessage("Use /citem get " + args[1] + " to obtain the registered item.");
                 save();

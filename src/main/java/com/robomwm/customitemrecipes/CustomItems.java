@@ -201,7 +201,7 @@ class CustomItems implements CommandExecutor
             case "register":
                 if (!customItemRecipes.registerItem(item, args[1]))
                 {
-                    sender.sendMessage("Already registered, use /reregister to force");
+                    sender.sendMessage("Already registered, use /citem reregister to force");
                     return false;
                 }
                 itemsYaml.set(args[1], item);

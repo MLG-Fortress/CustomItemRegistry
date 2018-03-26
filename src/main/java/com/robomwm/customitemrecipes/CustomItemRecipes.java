@@ -38,7 +38,7 @@ public class CustomItemRecipes extends JavaPlugin
     private CustomRecipes customRecipes;
     private RecipeBlocker recipeBlocker;
     private boolean useHiddenID;
-    private final String visibleIDPrefix = ChatColor.DARK_GRAY + "CID: ";
+    private final String visibleIDPrefix = ChatColor.DARK_GRAY + "CID:";
 
     public void onEnable()
     {
@@ -177,7 +177,7 @@ public class CustomItemRecipes extends JavaPlugin
             String line = itemMeta.getLore().get(itemMeta.getLore().size() - 1);
             if (!line.startsWith(visibleIDPrefix))
                 return null;
-            return line.substring(7);
+            return line.substring(6);
         }
 
         try

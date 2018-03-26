@@ -70,6 +70,7 @@ class CustomItems implements CommandExecutor
         save();
     }
 
+    //This turned into a mess fast :/
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
     {
@@ -83,12 +84,15 @@ class CustomItems implements CommandExecutor
                 sender.sendMessage("Item is not registered");
             return true;
         }
+        if (!(sender instanceof Player))
+            return false;
+        Player player = (Player)sender;
         if (args.length < 2)
         {
             switch(args[0].toLowerCase())
             {
                 case "lore":
-                    sender.sendMessage("/" + cmd.getLabel() + " lore <clear/add> <lore...>");
+                    loreizerPrompt(player);
                     break;
                 case "name":
                     sender.sendMessage("/" + cmd.getLabel() + "name <name...> - Sets display name of item. Color codes accepted.");
@@ -104,10 +108,6 @@ class CustomItems implements CommandExecutor
             }
             return true;
         }
-        if (!(sender instanceof Player))
-            return false;
-        Player player = (Player)sender;
-
         if (args[0].equalsIgnoreCase("get"))
         {
             ItemStack itemStack = customItemRecipes.getItem(args[1]);
@@ -126,7 +126,11 @@ class CustomItems implements CommandExecutor
 
         ItemMeta itemMeta = item.getItemMeta();
         if (customItemRecipes.extractCustomID(itemMeta) != null)
-            itemMeta.getLore().remove(itemMeta.getLore().size() - 1);
+        {
+            List<String> lore = itemMeta.getLore();
+            lore.remove(itemMeta.getLore().size() - 1);
+            itemMeta.setLore(lore);
+        }
 
         int line;
 
@@ -140,14 +144,14 @@ class CustomItems implements CommandExecutor
                     lore = new ArrayList<>();
                 switch(args[1].toLowerCase())
                 {
-                    case "remove":
                     case "clear":
                         itemMeta.setLore(null);
                         sender.sendMessage("Lore cleared");
                         break;
+                    case "remove":
                     case "delete":
                         line = Integer.parseInt(args[2]);
-                        lore.remove(--line);
+                        lore.remove(line);
                         itemMeta.setLore(lore);
                         sender.sendMessage("Deleted " + line);
                         break;
@@ -155,7 +159,7 @@ class CustomItems implements CommandExecutor
                         try
                         {
                             line = Integer.parseInt(args[2]);
-                            lore.remove(--line);
+                            lore.remove(line);
                             args[0] = null;
                             args[1] = null;
                             args[2] = null;
@@ -234,16 +238,16 @@ class CustomItems implements CommandExecutor
         if (customItemRecipes.extractCustomID(itemMeta) != null)
             itemMeta.getLore().remove(itemMeta.getLore().size() - 1);
         if (!itemMeta.hasDisplayName())
-            player.sendMessage(LazyUtil.getClickableSuggestion("[Set display name]", "/citem lore name ", null));
+            player.sendMessage(LazyUtil.getClickableSuggestion("[Set display name]", "/citem name ", "Set display name"));
         else
-            player.sendMessage(LazyUtil.getClickableSuggestion("Display name: " + itemMeta.getDisplayName(), "/citem lore name " + itemMeta.getDisplayName().replaceAll("\u00A7", "&"), null));
+            player.sendMessage(LazyUtil.getClickableSuggestion("[Set display name] " + itemMeta.getDisplayName(), "/citem name " + itemMeta.getDisplayName().replaceAll("\u00A7", "&"), "Change display name"));
         if (itemMeta.hasLore())
         {
             player.sendMessage("Lore: ");
             for (int i = 0; i < itemMeta.getLore().size(); i++)
             {
-                player.sendMessage(LazyUtil.getClickableSuggestion("[+]", "/citem lore insert " + i + " ", "Insert line below"),
-                        LazyUtil.getClickableSuggestion("[-] ", "/citem lore delete " + i, "Delete this line"),
+                player.sendMessage(LazyUtil.getClickableSuggestion("[+]", "/citem lore insert " + i + " ", "Insert line above"),
+                        LazyUtil.getClickableSuggestion("[-] ", "/citem lore remove " + i, "Remove this line"),
                         LazyUtil.getClickableSuggestion(itemMeta.getLore().get(i), "/citem lore set " + i + " ", "Modify this line"));
             }
         }

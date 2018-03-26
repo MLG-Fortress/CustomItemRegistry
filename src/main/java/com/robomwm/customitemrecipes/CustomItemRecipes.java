@@ -228,17 +228,21 @@ public class CustomItemRecipes extends JavaPlugin
     private void brandCustomItemID(ItemStack itemStack, String name)
     {
         ItemMeta itemMeta = itemStack.getItemMeta();
+
         List<String> lore;
         if (!itemMeta.hasLore())
             lore = new ArrayList<>();
         else
             lore = itemMeta.getLore();
+
         if (extractCustomID(itemMeta) != null)
             lore.remove(itemMeta.getLore().size() - 1);
+
         if (useHiddenID)
-            lore.add(itemMeta.getLore().size() - 1, hideText(name));
+            lore.add(hideText(name));
         else
-            lore.add(itemMeta.getLore().size() - 1, visibleIDPrefix + name);
+            lore.add(visibleIDPrefix + name);
+
         itemMeta.setLore(lore);
         itemStack.setItemMeta(itemMeta);
     }

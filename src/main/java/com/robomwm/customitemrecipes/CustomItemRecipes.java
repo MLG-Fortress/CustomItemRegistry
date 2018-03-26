@@ -38,10 +38,11 @@ public class CustomItemRecipes extends JavaPlugin
     private CustomRecipes customRecipes;
     private RecipeBlocker recipeBlocker;
     private boolean useHiddenID;
-    private final String visibleIDPrefix = ChatColor.DARK_GRAY + "CID:";
+    private String visibleIDPrefix;
 
     public void onEnable()
     {
+        visibleIDPrefix = ChatColor.DARK_GRAY + "CID:";
         saveConfig();
         getConfig().addDefault("useHiddenID", true);
         getConfig().options().copyDefaults(true);

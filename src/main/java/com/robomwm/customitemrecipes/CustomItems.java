@@ -237,20 +237,21 @@ class CustomItems implements CommandExecutor
         ItemMeta itemMeta = item.getItemMeta();
         if (customItemRecipes.extractCustomID(itemMeta) != null)
             itemMeta.getLore().remove(itemMeta.getLore().size() - 1);
+        player.sendMessage("Display name:");
         if (!itemMeta.hasDisplayName())
             player.sendMessage(LazyUtil.getClickableSuggestion("[Set display name]", "/citem name ", "Set display name"));
         else
-            player.sendMessage(LazyUtil.getClickableSuggestion("[Set display name] " + itemMeta.getDisplayName(), "/citem name " + itemMeta.getDisplayName().replaceAll("\u00A7", "&"), "Change display name"));
+            player.sendMessage(LazyUtil.getClickableSuggestion(itemMeta.getDisplayName(), "/citem name " + itemMeta.getDisplayName().replaceAll("\u00A7", "&"), "Change display name"));
         if (itemMeta.hasLore())
         {
-            player.sendMessage("Lore: ");
+            player.sendMessage("Lore:");
             for (int i = 0; i < itemMeta.getLore().size(); i++)
             {
                 player.sendMessage(LazyUtil.getClickableSuggestion("[+]", "/citem lore insert " + i + " ", "Insert line above"),
-                        LazyUtil.getClickableSuggestion("[-] ", "/citem lore remove " + i, "Remove this line"),
-                        LazyUtil.getClickableSuggestion(itemMeta.getLore().get(i), "/citem lore set " + i + " ", "Modify this line"));
+                        LazyUtil.getClickableSuggestion("[-] ", "/citem lore remove " + i, "Remove line"),
+                        LazyUtil.getClickableSuggestion(itemMeta.getLore().get(i), "/citem lore set " + i + " ", "Modify line"));
             }
         }
-        player.sendMessage(LazyUtil.getClickableSuggestion("Append lore", "/citem lore add ", "Append lore"));
+        player.sendMessage(LazyUtil.getClickableSuggestion("[+] Append lore", "/citem lore add ", "Append lore"));
     }
 }

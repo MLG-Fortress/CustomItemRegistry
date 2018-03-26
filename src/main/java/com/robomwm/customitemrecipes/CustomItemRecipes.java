@@ -88,7 +88,7 @@ public class CustomItemRecipes extends JavaPlugin
      */
     public boolean registerItem(@Nonnull ItemStack item, String name, boolean force)
     {
-        Validate.isTrue(item.getType() != Material.AIR);
+        Validate.isTrue(item.getType() != Material.AIR, "Cannot register an item with type AIR");
         if (items.containsKey(name) && !force)
             return false;
         ItemStack itemStack = item.clone();

@@ -87,6 +87,20 @@ class CustomItems implements CommandExecutor
         if (!(sender instanceof Player))
             return false;
         Player player = (Player)sender;
+
+        ItemStack item = player.getInventory().getItemInMainHand();
+        if (item == null || item.getType() == Material.AIR)
+            return false;
+
+        ItemMeta itemMeta = item.getItemMeta();
+        if (customItemRecipes.extractCustomID(itemMeta) != null)
+        {
+            List<String> lore = itemMeta.getLore();
+            lore.remove(itemMeta.getLore().size() - 1);
+            itemMeta.setLore(lore);
+            item.setItemMeta(itemMeta);
+        }
+        
         if (args.length < 2)
         {
             switch(args[0].toLowerCase())
@@ -119,17 +133,6 @@ class CustomItems implements CommandExecutor
             else
                 player.sendMessage("Item id not registered.");
             return true;
-        }
-        ItemStack item = player.getInventory().getItemInMainHand();
-        if (item == null || item.getType() == Material.AIR)
-            return false;
-
-        ItemMeta itemMeta = item.getItemMeta();
-        if (customItemRecipes.extractCustomID(itemMeta) != null)
-        {
-            List<String> lore = itemMeta.getLore();
-            lore.remove(itemMeta.getLore().size() - 1);
-            itemMeta.setLore(lore);
         }
 
         int line;

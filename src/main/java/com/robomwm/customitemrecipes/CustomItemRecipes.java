@@ -85,8 +85,9 @@ public class CustomItemRecipes extends JavaPlugin
      * @param force Whether we should overwrite an existing custom item, if present
      * @return true if successfully registered, false if the specified string ID is already registered. Always succeeds if force is true.
      */
-    public boolean registerItem(ItemStack item, String name, boolean force)
+    public boolean registerItem(@Nonnull ItemStack item, String name, boolean force)
     {
+        Validate.isTrue(item.getType() != Material.AIR);
         if (items.containsKey(name) && !force)
             return false;
         ItemStack itemStack = item.clone();

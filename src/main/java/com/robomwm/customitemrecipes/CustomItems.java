@@ -147,15 +147,15 @@ class CustomItems implements CommandExecutor
                         break;
                     case "delete":
                         line = Integer.parseInt(args[2]);
-                        lore.remove(line);
+                        lore.remove(--line);
                         itemMeta.setLore(lore);
-                        sender.sendMessage("Set " + line);
+                        sender.sendMessage("Deleted " + line);
                         break;
                     case "set":
                         try
                         {
                             line = Integer.parseInt(args[2]);
-                            lore.remove(line);
+                            lore.remove(--line);
                             args[0] = null;
                             args[1] = null;
                             args[2] = null;
@@ -164,13 +164,26 @@ class CustomItems implements CommandExecutor
                             itemMeta.setLore(lore);
                             break;
                         }
-                        catch (Throwable rock){}
+                        catch (Throwable ignored){}
                     case "add":
                         args[0] = null;
                         args[1] = null;
                         lore.add(ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, " ").substring(2)));
                         itemMeta.setLore(lore);
                         sender.sendMessage("Added lore");
+                        break;
+                    case "insert":
+                        try
+                        {
+                            line = Integer.parseInt(args[2]);
+                            args[0] = null;
+                            args[1] = null;
+                            args[2] = null;
+                            lore.add(line, ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, " ").substring(3)));
+                            sender.sendMessage("Inserted " + line);
+                            itemMeta.setLore(lore);
+                        }
+                        catch (Throwable ignored){}
                         break;
                     default:
                         sender.sendMessage("/" + cmd.getLabel() + " lore <clear/add> <lore...> or /lore set <line> <lore...>");
@@ -189,12 +202,14 @@ class CustomItems implements CommandExecutor
                 }
                 itemsYaml.set(args[1], item);
                 sender.sendMessage("Registered " + args[1]);
+                sender.sendMessage("Use /citem get " + args[1] + " to obtain the registered item.");
                 save();
                 return true;
             case "reregister":
                 customItemRecipes.registerItem(item, args[1], true);
                 itemsYaml.set(args[1], item);
                 sender.sendMessage("Registered " + args[1]);
+                sender.sendMessage("Use /citem get " + args[1] + " to obtain the registered item.");
                 save();
                 return true;
             default:
@@ -203,6 +218,35 @@ class CustomItems implements CommandExecutor
 
         item.setItemMeta(itemMeta);
         player.getInventory().setItemInMainHand(item);
+        loreizerPrompt(player);
         return true;
+    }
+
+    private void loreizerPrompt(Player player)
+    {
+        ItemStack item = player.getInventory().getItemInMainHand();
+        if (item == null || item.getType() == Material.AIR)
+        {
+            player.sendMessage("You must be holding an item to use the loreizer");
+            return;
+        }
+        ItemMeta itemMeta = item.getItemMeta();
+        if (customItemRecipes.extractCustomID(itemMeta) != null)
+            itemMeta.getLore().remove(itemMeta.getLore().size() - 1);
+        if (!itemMeta.hasDisplayName())
+            player.sendMessage(LazyUtil.getClickableSuggestion("[Set display name]", "/citem lore name ", null));
+        else
+            player.sendMessage(LazyUtil.getClickableSuggestion("Display name: " + itemMeta.getDisplayName(), "/citem lore name " + itemMeta.getDisplayName().replaceAll("\u00A7", "&"), null));
+        if (itemMeta.hasLore())
+        {
+            player.sendMessage("Lore: ");
+            for (int i = 0; i < itemMeta.getLore().size(); i++)
+            {
+                player.sendMessage(LazyUtil.getClickableSuggestion("[+]", "/citem lore insert " + i + " ", "Insert line below"),
+                        LazyUtil.getClickableSuggestion("[-] ", "/citem lore delete " + i, "Delete this line"),
+                        LazyUtil.getClickableSuggestion(itemMeta.getLore().get(i), "/citem lore set " + i + " ", "Modify this line"));
+            }
+        }
+        player.sendMessage(LazyUtil.getClickableSuggestion("Append lore", "/citem lore add ", "Append lore"));
     }
 }

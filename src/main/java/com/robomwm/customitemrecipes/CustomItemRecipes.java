@@ -12,7 +12,6 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.annotation.Nonnull;
 import java.nio.charset.StandardCharsets;
@@ -38,16 +37,18 @@ public class CustomItemRecipes extends JavaPlugin
     private CustomRecipes customRecipes;
     private RecipeBlocker recipeBlocker;
     private boolean useHiddenID;
+    private boolean onlyCheckVisibleID;
     private String visibleIDPrefix;
 
     public void onEnable()
     {
         visibleIDPrefix = ChatColor.DARK_GRAY + "CID:";
         saveConfig();
-        getConfig().addDefault("useHiddenID", true);
+        getConfig().addDefault("useInvisibleID", true);
         getConfig().options().copyDefaults(true);
         saveConfig();
-        useHiddenID = getConfig().getBoolean("useHiddenID");
+        useHiddenID = getConfig().getBoolean("useInvisibleID");
+        onlyCheckVisibleID = getConfig().getBoolean("onlyCheckVisibleID"); //"Invisible" option hahah
         customItems = new CustomItems(this);
         customRecipes = new CustomRecipes(this);
         recipeBlocker = new RecipeBlocker(this);
@@ -158,7 +159,7 @@ public class CustomItemRecipes extends JavaPlugin
     }
 
     /**
-     * Returns string ID hidden inside the lore of the item, if present.
+     * Returns string ID embedded in lore of the item, if present.
      * @param itemMeta
      * @return name of custom item, null otherwise
      */
@@ -167,13 +168,12 @@ public class CustomItemRecipes extends JavaPlugin
         if (!itemMeta.hasLore())
             return null;
 
-        if (!useHiddenID)
-        {
-            String line = itemMeta.getLore().get(itemMeta.getLore().size() - 1);
-            if (!line.startsWith(visibleIDPrefix))
-                return null;
+        String line = itemMeta.getLore().get(itemMeta.getLore().size() - 1);
+        if (line.startsWith(visibleIDPrefix))
             return line.substring(6);
-        }
+
+        if (onlyCheckVisibleID)
+            return null;
 
         try
         {

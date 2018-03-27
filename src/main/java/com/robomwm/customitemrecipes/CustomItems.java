@@ -88,19 +88,6 @@ class CustomItems implements CommandExecutor
             return false;
         Player player = (Player)sender;
 
-        ItemStack item = player.getInventory().getItemInMainHand();
-        if (item == null || item.getType() == Material.AIR)
-            return false;
-
-        ItemMeta itemMeta = item.getItemMeta();
-        if (customItemRecipes.extractCustomID(itemMeta) != null)
-        {
-            List<String> lore = itemMeta.getLore();
-            lore.remove(itemMeta.getLore().size() - 1);
-            itemMeta.setLore(lore);
-            item.setItemMeta(itemMeta);
-        }
-
         if (args.length < 2)
         {
             switch(args[0].toLowerCase())
@@ -133,6 +120,19 @@ class CustomItems implements CommandExecutor
             else
                 player.sendMessage("Item id not registered.");
             return true;
+        }
+
+        ItemStack item = player.getInventory().getItemInMainHand();
+        if (item == null || item.getType() == Material.AIR)
+            return false;
+
+        ItemMeta itemMeta = item.getItemMeta();
+        if (customItemRecipes.extractCustomID(itemMeta) != null)
+        {
+            List<String> lore = itemMeta.getLore();
+            lore.remove(itemMeta.getLore().size() - 1);
+            itemMeta.setLore(lore);
+            item.setItemMeta(itemMeta);
         }
 
         int line;
@@ -240,7 +240,12 @@ class CustomItems implements CommandExecutor
         }
         ItemMeta itemMeta = item.getItemMeta();
         if (customItemRecipes.extractCustomID(itemMeta) != null)
-            itemMeta.getLore().remove(itemMeta.getLore().size() - 1);
+        {
+            List<String> lore = itemMeta.getLore();
+            lore.remove(itemMeta.getLore().size() - 1);
+            itemMeta.setLore(lore);
+            item.setItemMeta(itemMeta);
+        }
         player.sendMessage("Display name:");
         if (!itemMeta.hasDisplayName())
             player.sendMessage(LazyUtil.getClickableSuggestion("[Set display name]", "/citem name ", "Set display name"));

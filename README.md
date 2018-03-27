@@ -14,6 +14,12 @@ Create your own custom items and recipes, all in-game (or via the configuration 
 ![](https://i.imgur.com/nfbhY0V.png)
 ![](https://i.imgur.com/hMEbsrL.png)
 
+## Config
+```yaml
+# Should the ID of a custom item be invisible to the client when spawning a custom item?
+useInvisibleID: true
+```
+
 ## Features
 - Want to override vanilla recipes? Use [RecipeRemover](https://dev.bukkit.org/projects/reciperemover)
 - Supports all rectangular sizes of shaped recipes! Recipes can 1x3, 2x2, etc.

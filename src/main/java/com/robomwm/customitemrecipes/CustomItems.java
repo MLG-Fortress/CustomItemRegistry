@@ -204,11 +204,12 @@ class CustomItems implements CommandExecutor
             case "register":
                 if (!customItemRecipes.registerItem(item, args[1]))
                 {
-                    sender.sendMessage("Already registered, use /citem reregister to force");
+                    sender.sendMessage("Already registered, use /cremove or /citem reregister.");
+                    sender.sendMessage("Note: /citem reregister does not remove old recipes.");
                     return false;
                 }
                 itemsYaml.set(args[1], item.clone());
-                sender.sendMessage("Registered " + args[1]);
+                sender.sendMessage("Registered " + args[1] + ". Note that existing recipes for the previously-registered item will still exist until next server restart.");
                 sender.sendMessage("Use /citem get " + args[1] + " to obtain the registered item.");
                 save();
                 return true;

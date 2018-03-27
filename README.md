@@ -15,6 +15,7 @@ Create your own custom items and recipes, all in-game (or via the configuration 
 ![](https://i.imgur.com/hMEbsrL.png)
 
 ## Features
+- Want to override vanilla recipes? Use [RecipeRemover](https://dev.bukkit.org/projects/reciperemover)
 - Supports all rectangular sizes of shaped recipes! Recipes can 1x3, 2x2, etc.
 - Compatible with all crafting-related plugins such as FastCraft+ since the recipe is actually registered in the server.
 - Easily create recipes by placing items in the on-screen "GUI" prompt.

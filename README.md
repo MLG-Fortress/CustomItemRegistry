@@ -9,6 +9,7 @@ Create your own custom items and recipes, all in-game (or via the configuration 
 - /crecipe - Create a shaped or shapeless recipe for a custom item.
 - /cremove - Removes a custom item and all its recipes.
 
+![](https://i.imgur.com/4jopeyL.png)
 ![](https://i.imgur.com/UOXdfN6.png)
 
 ![](https://i.imgur.com/nfbhY0V.png)

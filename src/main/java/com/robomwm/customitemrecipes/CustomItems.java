@@ -209,14 +209,14 @@ class CustomItems implements CommandExecutor
                     return false;
                 }
                 itemsYaml.set(args[1], item.clone());
-                sender.sendMessage("Registered " + args[1] + ". Note that existing recipes for the previously-registered item will still exist until next server restart.");
+                sender.sendMessage("Registered " + args[1]);
                 sender.sendMessage("Use /citem get " + args[1] + " to obtain the registered item.");
                 save();
                 return true;
             case "reregister":
                 customItemRecipes.registerItem(item, args[1], true);
                 itemsYaml.set(args[1], item.clone());
-                sender.sendMessage("Registered " + args[1]);
+                sender.sendMessage("Registered " + args[1] + ". Note that existing recipes for the previously-registered item will still exist until next server restart.");
                 sender.sendMessage("Use /citem get " + args[1] + " to obtain the registered item.");
                 save();
                 return true;

@@ -6,7 +6,6 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -92,6 +91,10 @@ class CustomItems implements CommandExecutor
         {
             switch(args[0].toLowerCase())
             {
+                case "list":
+                    for (String cid : customItemRecipes.getItemNames())
+                        sender.sendMessage(cid);
+                    break;
                 case "lore":
                     loreizerPrompt(player);
                     break;

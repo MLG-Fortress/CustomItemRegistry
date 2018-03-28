@@ -10,7 +10,7 @@ commands:
       permission: customitemrecipes.crecipe
       aliases: [crecipes]
   citem:
-      usage: /citem <name/register/reregister/get/lore>
+      usage: /citem <list/name/register/get/lore>
       permission: customitemrecipes.citem
       aliases: [citems]
   cremove:

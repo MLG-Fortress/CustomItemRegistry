@@ -13,15 +13,16 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import javax.annotation.Nonnull;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 /**
@@ -81,8 +82,9 @@ public class CustomItemRecipes extends JavaPlugin
      * @param force Whether we should overwrite an existing custom item, if present
      * @return true if successfully registered, false if the specified string ID is already registered. Always succeeds if force is true.
      */
-    public boolean registerItem(@Nonnull ItemStack item, String name, boolean force)
+    public boolean registerItem(ItemStack item, String name, boolean force)
     {
+        Validate.notNull(item, "Cannot register a null item");
         Validate.isTrue(item.getType() != Material.AIR, "Cannot register an item of type AIR");
         if (items.containsKey(name) && !force)
             return false;
@@ -97,6 +99,11 @@ public class CustomItemRecipes extends JavaPlugin
         if (!items.containsKey(name))
             return null;
         return items.get(name).clone();
+    }
+
+    public Set<String> getItemNames()
+    {
+        return new HashSet<>(items.keySet());
     }
 
     /**
@@ -137,9 +144,10 @@ public class CustomItemRecipes extends JavaPlugin
      * @param itemStack The ItemStack to check. Item must not be null or of type AIR.
      * @return true if custom item matches registered item name
      */
-    public boolean isItem(String name, @Nonnull ItemStack itemStack)
+    public boolean isItem(String name, ItemStack itemStack)
     {
-        Validate.isTrue(itemStack.getType() != Material.AIR, "Cannot check AIR (contains no ItemMetadata).");
+        if (itemStack == null || itemStack.getType() == Material.AIR)
+            return false;
         ItemStack customStack = items.get(name);
         if (customStack == null || customStack.getType() != itemStack.getType())
             return false;

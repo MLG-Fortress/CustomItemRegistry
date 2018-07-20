@@ -201,6 +201,7 @@ public class CustomItemRecipes extends JavaPlugin
 
     /**
      * Get a new shapedRecipe object for the given customItem string
+     * @apinote key must be [a-z0-9._-] for 1.13
      * @param plugin
      * @param name
      * @return a new ShapedRecipe, or null if the custom item string id is not registered.
@@ -209,7 +210,7 @@ public class CustomItemRecipes extends JavaPlugin
     {
         if (!items.containsKey(name))
             return null;
-        return new ShapedRecipe(new NamespacedKey(plugin, name + ":" + Integer.toString(i++)), items.get(name));
+        return new ShapedRecipe(new NamespacedKey(plugin, name.toLowerCase() + "-" + Integer.toString(i++)), items.get(name));
     }
 
     /**
@@ -222,7 +223,7 @@ public class CustomItemRecipes extends JavaPlugin
     {
         if (!items.containsKey(name))
             return null;
-        return new ShapelessRecipe(new NamespacedKey(plugin, name + ":" + Integer.toString(i++)), items.get(name));
+        return new ShapelessRecipe(new NamespacedKey(plugin, name.toLowerCase() + "-" + Integer.toString(i++)), items.get(name));
     }
 
     //internal

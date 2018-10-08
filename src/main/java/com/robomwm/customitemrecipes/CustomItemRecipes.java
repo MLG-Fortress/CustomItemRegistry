@@ -49,6 +49,7 @@ public class CustomItemRecipes extends JavaPlugin
         saveConfig();
         getConfig().addDefault("useInvisibleID", true);
         getConfig().options().copyDefaults(true);
+        getConfig().options().header("Should spawned custom item \"IDs\" be invisible?");
         saveConfig();
         useHiddenID = getConfig().getBoolean("useInvisibleID");
         onlyCheckVisibleID = getConfig().getBoolean("onlyCheckVisibleID"); //"Invisible" option hahah
@@ -124,6 +125,11 @@ public class CustomItemRecipes extends JavaPlugin
         return true;
     }
 
+    /**
+     * Returns a copy of the registered custom item
+     * @param name the registered string ID of the item
+     * @return null if not found, or clone of the registered item
+     */
     public ItemStack getItem(String name)
     {
         if (!items.containsKey(name))
@@ -137,11 +143,9 @@ public class CustomItemRecipes extends JavaPlugin
     }
 
     /**
-     * Removes a registered item and its recipes.
+     * Removes a registered item and blocks its recipes.
      *
-     * Recipes will only be removed if no players are online.
-     * Otherwise it will wait until all players are offline before removing, and block crafting of the item until then.
-     * @see RecipeBlocker
+     * Recipes can only be safely removed after a server restart.
      *
      * @param name String ID of custom item to remove.
      * @return Whether the item was previously registered.
@@ -231,16 +235,16 @@ public class CustomItemRecipes extends JavaPlugin
 
     /**
      * Get a new shapedRecipe object for the given customItem string
-     * @apinote key must be [a-z0-9._-] for 1.13
      * @param plugin
      * @param name
      * @return a new ShapedRecipe, or null if the custom item string id is not registered.
+     * @implNote key must be [a-z0-9._-] for 1.13
      */
     public ShapedRecipe getShapedRecipe(JavaPlugin plugin, String name)
     {
         if (!items.containsKey(name))
             return null;
-        return new ShapedRecipe(new NamespacedKey(plugin, name.toLowerCase() + "-" + Integer.toString(i++)), items.get(name));
+        return new ShapedRecipe(new NamespacedKey(plugin, name.toLowerCase().replaceAll("[^a-z0-9._-]+", "") + "-" + Integer.toString(i++)), items.get(name));
     }
 
     /**
@@ -248,12 +252,13 @@ public class CustomItemRecipes extends JavaPlugin
      * @param plugin
      * @param name
      * @return a new ShapelessRecipe, or null if the custom item string id is not registered.
+     * @implNote key must be [a-z0-9._-] for 1.13
      */
     public ShapelessRecipe getShapelessRecipe(JavaPlugin plugin, String name)
     {
         if (!items.containsKey(name))
             return null;
-        return new ShapelessRecipe(new NamespacedKey(plugin, name.toLowerCase() + "-" + Integer.toString(i++)), items.get(name));
+        return new ShapelessRecipe(new NamespacedKey(plugin, name.toLowerCase().replaceAll("[^a-z0-9._-]+", "") + "-" + Integer.toString(i++)), items.get(name));
     }
 
     //internal

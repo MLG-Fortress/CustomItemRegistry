@@ -1,7 +1,7 @@
 # CustomItemRecipes
-Create your own custom items and recipes, all in-game (or via the configuration files, if that's your fancy)! Also includes an API so plugins can register their own custom items and recipes!
+Create your own custom items and recipes, all in-game (or via the files, if that's your fancy)! Also provides an API for plugins to recognize custom items and register their own!
 
-[Source](https://github.com/MLG-Fortress/CustomItemRecipes) | [Patreon](https://patreon.com/RoboMWM)
+[Source](https://github.com/MLG-Fortress/CustomItemRecipes) | [Support this project!](https://patreon.com/RoboMWM)
 
 ## Commands
 - [Permissions](https://github.com/MLG-Fortress/CustomItemRecipes/blob/master/src/main/resources/plugin.yml)
@@ -17,17 +17,20 @@ Create your own custom items and recipes, all in-game (or via the configuration 
 
 ## Config
 ```yaml
-# Should the ID of a custom item be invisible to the client when spawning a custom item?
+# Should spawned custom item "IDs" be invisible?
 useInvisibleID: true
 ```
 
 ## Features
-- Want to override vanilla recipes? Use [RecipeRemover](https://dev.bukkit.org/projects/reciperemover)
-- Supports all rectangular sizes of shaped recipes! Recipes can 1x3, 2x2, etc.
+- Supports all rectangular sizes of shaped recipes! Recipes can 1x3, 2x2, 1x2, 2x3, etc.
 - Compatible with all crafting-related plugins such as FastCraft+ since the recipe is actually registered in the server.
 - Easily create recipes by placing items in the on-screen "GUI" prompt.
 - Easily add name and lore to your custom items.
-- API for plugins to register their own items and/or extend this plugin's features.
+- API for plugins, they can
+  - recognize registered custom items,
+  - register their own custom items,
+  - register their own recipes for custom items,
+  - etc.
 
 ## API
-Currently resides in the main class. Get the plugin's instance as per usual and call the public methods as you wish.
+Currently resides in the main class. Get the plugin's instance as per usual and call the public methods as you wish. Javadocs are present, will host them soon, but for now they're in the code.

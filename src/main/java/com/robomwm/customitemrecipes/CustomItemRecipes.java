@@ -3,6 +3,7 @@ package com.robomwm.customitemrecipes;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.Validate;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.stream.IntStream;
 
 /**
@@ -57,6 +59,34 @@ public class CustomItemRecipes extends JavaPlugin
         getCommand("cremove").setExecutor(customItems);
         getServer().getPluginManager().registerEvents(recipeBlocker, this);
         getCommand("crecipe").setExecutor(customRecipes);
+
+        try
+        {
+            Metrics metrics = new Metrics(this);
+            metrics.addCustomChart(new Metrics.SimplePie("bukkit_implementation", new Callable<String>()
+            {
+                @Override
+                public String call() throws Exception
+                {
+                    return getServer().getVersion().split("-")[1];
+                }
+            }));
+
+            for (final String key : getConfig().getKeys(false))
+            {
+                if (!getConfig().isBoolean(key) && !getConfig().isInt(key) && !getConfig().isString(key))
+                    continue;
+                metrics.addCustomChart(new Metrics.SimplePie(key.toLowerCase(), new Callable<String>()
+                {
+                    @Override
+                    public String call() throws Exception
+                    {
+                        return getConfig().getString(key);
+                    }
+                }));
+            }
+        }
+        catch (Throwable ignored) {}
     }
 
     public RecipeBlocker getRecipeBlocker()

@@ -208,7 +208,7 @@ class CustomRecipes implements CommandExecutor, Listener
         ItemStack item = customItemRecipes.getItem(args[1]);
         if (item == null)
         {
-            sender.sendMessage(args[1] + " is not registered. Use /citem to register an item.");
+            sender.sendMessage(args[1] + " is not a registered custom item name. Use /citem to register an item.");
             return false;
         }
 

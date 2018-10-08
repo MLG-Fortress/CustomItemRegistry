@@ -105,16 +105,17 @@ class CustomItems implements CommandExecutor
                         sender.sendMessage(cid);
                     break;
                 case "lore":
+                case "loreizer":
                     loreizerPrompt(player);
                     break;
                 case "name":
                     sender.sendMessage("/" + cmd.getLabel() + "name <name...> - Sets display name of item. Color codes accepted.");
                     break;
                 case "register":
-                    sender.sendMessage("/" + cmd.getLabel() + "register <name> - Adds custom item to plugin with the given name as its ID, storing it and allowing recipes to be created for it. Color codes not accepted.");
+                    sender.sendMessage("/" + cmd.getLabel() + "register <name> - Registers the held item with the given name as its \"ID,\" storing it and allowing recipes to be created for it and plugins to recognize it.");
                     break;
                 case "get":
-                    sender.sendMessage("/" + cmd.getLabel() + "<get> <customitem name> - Adds custom item to your inventory.");
+                    sender.sendMessage("/" + cmd.getLabel() + "<get> <customitem name> - Adds the custom item to your inventory.");
                     break;
                 default:
                     return false;
@@ -126,11 +127,11 @@ class CustomItems implements CommandExecutor
             ItemStack itemStack = customItemRecipes.getItem(args[1]);
             if (itemStack != null)
             {
-                player.sendMessage("Attempted to give you item");
+                player.sendMessage("Attempted to give you the requested item");
                 player.getInventory().addItem(itemStack);
             }
             else
-                player.sendMessage("Item id not registered.");
+                player.sendMessage("That item name has not been registered. See /citem list");
             return true;
         }
 
@@ -247,7 +248,8 @@ class CustomItems implements CommandExecutor
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item == null || item.getType() == Material.AIR)
         {
-            player.sendMessage("You must be holding an item to use the loreizer");
+            player.sendMessage("You must be holding an item to use the loreizer. " +
+                    "The loreizer allows you to \"customize\" an item via editing its lore.");
             return;
         }
         ItemMeta itemMeta = item.getItemMeta();

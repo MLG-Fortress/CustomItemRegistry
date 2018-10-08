@@ -260,21 +260,31 @@ class CustomItems implements CommandExecutor
             itemMeta.setLore(lore);
             item.setItemMeta(itemMeta);
         }
-        player.sendMessage("Display name:");
-        if (!itemMeta.hasDisplayName())
-            player.spigot().sendMessage(LazyUtil.getClickableSuggestion("[Set display name]", "/citem name ", "Set display name"));
-        else
-            player.spigot().sendMessage(LazyUtil.getClickableSuggestion(ChatColor.RESET + itemMeta.getDisplayName(), "/citem name " + itemMeta.getDisplayName().replaceAll("\u00A7", "&"), "Change display name"));
-        if (itemMeta.hasLore())
+        try
         {
-            player.sendMessage("Lore:");
-            for (int i = 0; i < itemMeta.getLore().size(); i++)
+            player.sendMessage("Display name:");
+            if (!itemMeta.hasDisplayName())
+                player.spigot().sendMessage(LazyUtil.getClickableSuggestion("[Set display name]", "/citem name ", "Set display name"));
+            else
+                player.spigot().sendMessage(LazyUtil.getClickableSuggestion(ChatColor.RESET + itemMeta.getDisplayName(), "/citem name " + itemMeta.getDisplayName().replaceAll("\u00A7", "&"), "Change display name"));
+            if (itemMeta.hasLore())
             {
-                player.spigot().sendMessage(LazyUtil.getClickableSuggestion("[+]", "/citem lore insert " + i + " ", "Insert line above"),
-                        LazyUtil.getClickableCommand("[-] ", "/citem lore remove " + i, "Remove line"),
-                        LazyUtil.getClickableSuggestion(ChatColor.DARK_PURPLE.toString() + ChatColor.ITALIC + itemMeta.getLore().get(i), "/citem lore set " + i + " " + itemMeta.getLore().get(i).replaceAll("\u00A7", "&"), "Modify line"));
+                player.sendMessage("Lore:");
+                for (int i = 0; i < itemMeta.getLore().size(); i++)
+                {
+                    player.spigot().sendMessage(LazyUtil.getClickableSuggestion("[+]", "/citem lore insert " + i + " ", "Insert line above"),
+                            LazyUtil.getClickableCommand("[-] ", "/citem lore remove " + i, "Remove line"),
+                            LazyUtil.getClickableSuggestion(ChatColor.DARK_PURPLE.toString() + ChatColor.ITALIC + itemMeta.getLore().get(i), "/citem lore set " + i + " " + itemMeta.getLore().get(i).replaceAll("\u00A7", "&"), "Modify line"));
+                }
             }
+            player.spigot().sendMessage(LazyUtil.getClickableSuggestion("[+] Append lore", "/citem lore add ", "Append lore"));
         }
-        player.spigot().sendMessage(LazyUtil.getClickableSuggestion("[+] Append lore", "/citem lore add ", "Append lore"));
+        catch (Throwable rock)
+        {
+            player.sendMessage("Your server does not support usage of the loreizer prompts. " +
+                    "\nIf you dare, you can try manually using commands to add lore. " +
+                    "/citem name, /citem lore add, /citem remove/set/insert [index]" +
+                    "\nUpgrade to Paper at https://papermc.io and you'll get a pretty clickable \"UI\" to use instead");
+        }
     }
 }

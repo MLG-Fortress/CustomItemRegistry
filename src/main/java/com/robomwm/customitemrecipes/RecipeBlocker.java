@@ -61,56 +61,56 @@ public class RecipeBlocker implements Listener
     }
 
     /**
-     * Disables crafting of the specified recipes, and queues them for removal
+     * Disables crafting of the specified recipes, <s>and queues them for removal</s>
      * @param recipes The recipes to block
      */
     public void addRecipes(Collection<Recipe> recipes)
     {
         for (Recipe recipe : recipes)
             resultsToBlock.add(((Keyed)recipe).getKey());
-        removeRecipesFromServer();
+        //removeRecipesFromServer();
     }
 
     //Remove blocked recipes when the server is empty
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    private void onLastPlayerQuit(PlayerQuitEvent event)
-    {
-        if (resultsToBlock.isEmpty())
-            return;
-        new BukkitRunnable()
-        {
-            @Override
-            public void run()
-            {
-                removeRecipesFromServer();
-            }
-        }.runTaskLater(plugin, 1L);
-    }
+//    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+//    private void onLastPlayerQuit(PlayerQuitEvent event)
+//    {
+//        if (resultsToBlock.isEmpty())
+//            return;
+//        new BukkitRunnable()
+//        {
+//            @Override
+//            public void run()
+//            {
+//                removeRecipesFromServer();
+//            }
+//        }.runTaskLater(plugin, 1L);
+//    }
 
-    private void removeRecipesFromServer()
-    {
-        if (plugin.getServer().getOnlinePlayers().size() == 0)
-        {
-            List<Recipe> recipesToKeep = new LinkedList<>();
-            Iterator<Recipe> recipeIterator = plugin.getServer().recipeIterator();
-            while (recipeIterator.hasNext())
-            {
-                Recipe recipe = recipeIterator.next();
+//    private void removeRecipesFromServer()
+//    {
+//        if (plugin.getServer().getOnlinePlayers().size() == 0)
+//        {
+//            List<Recipe> recipesToKeep = new LinkedList<>();
+//            Iterator<Recipe> recipeIterator = plugin.getServer().recipeIterator();
+//            while (recipeIterator.hasNext())
+//            {
+//                Recipe recipe = recipeIterator.next();
+//
+//                if (!(recipe instanceof Keyed)) //Keep all non-keyed (non-crafting table) recipes
+//                {
+//                    recipesToKeep.add(recipe);
+//                    continue;
+//                }
+//                if (!resultsToBlock.contains(((Keyed)recipe).getKey()))
+//                    recipesToKeep.add(recipe);
+//            }
+//            removeAllRecipesExceptFor(recipesToKeep);
+//            resultsToBlock.clear();
+//        }
+//    }
 
-                if (!(recipe instanceof Keyed)) //Keep all non-keyed (non-crafting table) recipes
-                {
-                    recipesToKeep.add(recipe);
-                    continue;
-                }
-                if (!resultsToBlock.contains(((Keyed)recipe).getKey()))
-                    recipesToKeep.add(recipe);
-            }
-            removeAllRecipesExceptFor(recipesToKeep);
-            resultsToBlock.clear();
-        }
-    }
-
-    /**
+    /*
      * Removes all recipes, then re-adds the recipes specified in the Collection.
      *
      * Will fail and return false if players are present on the server
@@ -124,29 +124,29 @@ public class RecipeBlocker implements Listener
      * @param recipesToKeep Collection of recipes to add after removing all recipes
      * @return
      */
-    private boolean removeAllRecipesExceptFor(Collection<Recipe> recipesToKeep)
-    {
-        if (plugin.getServer().getOnlinePlayers().size() > 0)
-            return false;
-        else
-            plugin.getServer().clearRecipes();
-
-        if (recipesToKeep == null)
-            return true;
-
-        /*Server#resetRecipes apparently "reinitializes" all vanilla recipes
-        So none of the recipes will Object#equals the "old" ones.
-        Thus, we use this nice try-catch to ignore the "duplicate recipe" exception
-        (And no, not all recipes implement NamespacedKey)
-         */
-        for (Recipe recipe : recipesToKeep)
-        {
-            try
-            {
-                plugin.getServer().addRecipe(recipe);
-            }
-            catch (IllegalStateException ignored){} //vanilla recipe
-        }
-        return true;
-    }
+//    private boolean removeAllRecipesExceptFor(Collection<Recipe> recipesToKeep)
+//    {
+//        if (plugin.getServer().getOnlinePlayers().size() > 0)
+//            return false;
+//        else
+//            plugin.getServer().clearRecipes();
+//
+//        if (recipesToKeep == null)
+//            return true;
+//
+//        /*Server#resetRecipes apparently "reinitializes" all vanilla recipes
+//        So none of the recipes will Object#equals the "old" ones.
+//        Thus, we use this nice try-catch to ignore the "duplicate recipe" exception
+//        (And no, not all recipes implement NamespacedKey)
+//         */
+//        for (Recipe recipe : recipesToKeep)
+//        {
+//            try
+//            {
+//                plugin.getServer().addRecipe(recipe);
+//            }
+//            catch (IllegalStateException ignored){} //vanilla recipe
+//        }
+//        return true;
+//    }
 }

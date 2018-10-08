@@ -4,6 +4,7 @@ version: ${project.version}
 website: http://robomwm.com
 author: RoboMWM
 main: com.robomwm.customitemrecipes.CustomItemRecipes
+api-version: 1.13
 commands:
   crecipe:
       usage: /crecipe <shaped/shapeless> <customitem name> - Note that recipes only use one item per slot.

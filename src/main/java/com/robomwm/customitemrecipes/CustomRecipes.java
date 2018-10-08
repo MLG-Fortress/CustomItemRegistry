@@ -83,11 +83,14 @@ class CustomRecipes implements CommandExecutor, Listener
                     ShapedRecipe shapedRecipe = customItemRecipes.getShapedRecipe(customItemRecipes, itemString);
                     if (shapedRecipe == null)
                     {
-                        customItemRecipes.getLogger().warning(itemString + " is not a custom item, skipping...");
+                        customItemRecipes.getLogger().warning(itemString +
+                                " is not a registered custom item, skipping...");
                         continue;
                     }
+
                     ConfigurationSection section = shapedSection.getConfigurationSection(recipes); //get recipe
                     shapedRecipe.shape(section.getString("shape").split(":"));
+                    boolean failedToAddIngredient = false;
                     for (String key : section.getKeys(false))
                     {
                         if (key.equalsIgnoreCase("shape"))
@@ -95,15 +98,19 @@ class CustomRecipes implements CommandExecutor, Listener
                         char keyChar = key.toCharArray()[0];
                         try
                         {
-                            shapedRecipe.setIngredient(keyChar, Material.getMaterial(section.getString(key)), Short.MAX_VALUE);
+                            shapedRecipe.setIngredient(keyChar, Material.getMaterial(section.getString(key)));
                         }
                         catch (Throwable rock)
                         {
                             customItemRecipes.getLogger().severe("invalid ingredient specified for " + itemString);
                             rock.printStackTrace();
-                            return; //go PR error handling here if u wanna
+                            failedToAddIngredient = true;
+                            break;
                         }
                     }
+                    if (failedToAddIngredient)
+                        continue;
+
                     customItemRecipes.getLogger().info("Loaded recipe " + recipes);
                     customItemRecipes.getServer().addRecipe(shapedRecipe);
                 }
@@ -113,28 +120,35 @@ class CustomRecipes implements CommandExecutor, Listener
 
             if (shapelessSection != null)
             {
+                customItemRecipes.getLogger().info("Loading shapeless recipes");
                 for (String recipes : shapelessSection.getKeys(false)) //for each shapeless recipe
                 {
-                    customItemRecipes.getLogger().info("Loading shapeless recipes");
                     ShapelessRecipe shapelessRecipe = customItemRecipes.getShapelessRecipe(customItemRecipes, itemString);
                     if (shapelessRecipe == null)
                     {
-                        customItemRecipes.getLogger().warning(itemString + " is not a custom item, skipping...");
+                        customItemRecipes.getLogger().warning(itemString +
+                                " is not a registered custom item, skipping...");
                         continue;
                     }
+
+                    boolean failedToAddIngredient = false;
                     for (String key : shapelessSection.getStringList(recipes)) //get ingredients list
                     {
                         try
                         {
-                            shapelessRecipe.addIngredient(1, Material.getMaterial(key), Short.MAX_VALUE);
+                            shapelessRecipe.addIngredient(1, Material.getMaterial(key));
                         }
                         catch (Throwable rock)
                         {
                             customItemRecipes.getLogger().severe("invalid ingredient specified for " + itemString);
                             rock.printStackTrace();
-                            return; //go PR error handling here if u wanna
+                            failedToAddIngredient = true;
+                            break; //go PR error handling here if u wanna
                         }
                     }
+                    if (failedToAddIngredient)
+                        continue;
+
                     customItemRecipes.getLogger().info("Loaded recipe " + recipes);
                     customItemRecipes.getServer().addRecipe(shapelessRecipe);
                 }
@@ -270,7 +284,7 @@ class CustomRecipes implements CommandExecutor, Listener
                 {
                     if (material == null)
                         continue;
-                    shapedRecipe.setIngredient(ingredients.get(material), material, Short.MAX_VALUE);
+                    shapedRecipe.setIngredient(ingredients.get(material), material);
                     player.sendMessage(ingredients.get(material).toString() + " = " + material.toString());
                 }
 
@@ -288,7 +302,7 @@ class CustomRecipes implements CommandExecutor, Listener
                 {
                     if (itemStack == null)
                         continue;
-                    shapelessRecipe.addIngredient(1, itemStack.getType(), Short.MAX_VALUE);
+                    shapelessRecipe.addIngredient(1, itemStack.getType());
                 }
 
                 if (shapelessRecipe.getIngredientList().isEmpty())

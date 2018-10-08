@@ -59,7 +59,16 @@ class CustomItems implements CommandExecutor
 
         for (String itemString : itemsYaml.getKeys(false))
         {
-            customItemRecipes.registerItem((ItemStack)itemsYaml.get(itemString), itemString);
+            try
+            {
+                customItemRecipes.registerItem((ItemStack)itemsYaml.get(itemString), itemString);
+            }
+            catch (Throwable rock)
+            {
+                customItemRecipes.getLogger().warning("Failed to load item " + itemString);
+                customItemRecipes.getLogger().warning("Perhaps it's a 1.12 or earlier item? Consider manually fixing or removing the item from the config.");
+                rock.printStackTrace();
+            }
         }
     }
 

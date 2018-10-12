@@ -98,11 +98,11 @@ class CustomRecipes implements CommandExecutor, Listener
                         char keyChar = key.toCharArray()[0];
                         try
                         {
-                            shapedRecipe.setIngredient(keyChar, Material.getMaterial(section.getString(key)));
+                            shapedRecipe.setIngredient(keyChar, Material.valueOf(section.getString(key)));
                         }
                         catch (Throwable rock)
                         {
-                            customItemRecipes.getLogger().severe("invalid ingredient specified for " + itemString);
+                            customItemRecipes.getLogger().severe("invalid ingredient " + section.getString(key) + " specified for " + itemString);
                             rock.printStackTrace();
                             failedToAddIngredient = true;
                             break;
@@ -136,11 +136,11 @@ class CustomRecipes implements CommandExecutor, Listener
                     {
                         try
                         {
-                            shapelessRecipe.addIngredient(1, Material.getMaterial(key));
+                            shapelessRecipe.addIngredient(1, Material.valueOf(key));
                         }
                         catch (Throwable rock)
                         {
-                            customItemRecipes.getLogger().severe("invalid ingredient specified for " + itemString);
+                            customItemRecipes.getLogger().severe("invalid ingredient " + key + " specified for " + itemString);
                             rock.printStackTrace();
                             failedToAddIngredient = true;
                             break; //go PR error handling here if u wanna

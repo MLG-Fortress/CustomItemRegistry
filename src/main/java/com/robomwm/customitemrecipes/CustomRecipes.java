@@ -1,5 +1,6 @@
 package com.robomwm.customitemrecipes;
 
+import com.robomwm.usefulutil.UsefulUtil;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -40,14 +41,7 @@ class CustomRecipes implements CommandExecutor, Listener
 
     public void save()
     {
-        try
-        {
-            recipesYaml.save(recipesFile);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        UsefulUtil.saveStringToFile(customItemRecipes, recipesFile, recipesYaml.saveToString());
     }
 
     CustomRecipes(CustomItemRecipes customItemRecipes)
@@ -154,6 +148,7 @@ class CustomRecipes implements CommandExecutor, Listener
                 }
             }
         }
+        customItemRecipes.getLogger().info("Finished loading recipes");
     }
 
     public void removeAllRecipes(String name)
@@ -261,8 +256,11 @@ class CustomRecipes implements CommandExecutor, Listener
 
                 //Generate shape
                 String[] shapedMatrix = getShapedMatrix(ingredients, inventory.getContents()).toArray(new String[0]);
-                if (shapedMatrix.length == 0)
-                    return; //empty
+                if (shapedMatrix.length == 0) //empty
+                {
+                    player.sendMessage("Recipe creation canceled.");
+                    return;
+                }
                 shapedRecipe.shape(shapedMatrix);
 
                 //setIngredients doesn't accept ingredients that aren't present in the shape so yea...
@@ -306,7 +304,10 @@ class CustomRecipes implements CommandExecutor, Listener
                 }
 
                 if (shapelessRecipe.getIngredientList().isEmpty())
+                {
+                    player.sendMessage("Recipe creation canceled.");
                     return;
+                }
 
                 //Add and save to file
                 if (!customItemRecipes.getServer().addRecipe(shapelessRecipe))

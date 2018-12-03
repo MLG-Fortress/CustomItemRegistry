@@ -1,5 +1,6 @@
 package com.robomwm.customitemrecipes;
 
+import com.robomwm.usefulutil.UsefulUtil;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -42,14 +43,7 @@ class CustomRecipes implements CommandExecutor, Listener
 
     public void save()
     {
-        try
-        {
-            recipesYaml.save(recipesFile);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        UsefulUtil.saveStringToFile(customItemRecipes, recipesFile, recipesYaml.saveToString());
     }
 
     CustomRecipes(CustomItemRecipes customItemRecipes)
@@ -156,6 +150,7 @@ class CustomRecipes implements CommandExecutor, Listener
                 }
             }
         }
+        customItemRecipes.getLogger().info("Finished loading recipes");
     }
 
     public void removeAllRecipes(String name)
@@ -266,10 +261,11 @@ class CustomRecipes implements CommandExecutor, Listener
 
                 //Generate shape
                 String[] shapedMatrix = getShapedMatrix(ingredients, inventory.getContents()).toArray(new String[0]);
-                if (shapedMatrix.length == 0)
+
+                if (shapedMatrix.length == 0) //empty
                 {
                     player.sendMessage(ChatColor.RED + "Recipe creation canceled (empty recipe)");
-                    return; //empty
+                    return;
                 }
                 shapedRecipe.shape(shapedMatrix);
 

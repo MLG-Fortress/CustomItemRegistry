@@ -1,5 +1,6 @@
 package com.robomwm.customitemrecipes;
 
+import com.robomwm.usefulutil.UsefulUtil;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -29,14 +30,7 @@ class CustomItems implements CommandExecutor
 
     public void save()
     {
-        try
-        {
-            itemsYaml.save(itemsFile);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        UsefulUtil.saveStringToFile(customItemRecipes, itemsFile, itemsYaml.saveToString());
     }
 
     CustomItems(CustomItemRecipes customItemRecipes)

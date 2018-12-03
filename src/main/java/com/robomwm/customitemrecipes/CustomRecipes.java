@@ -1,6 +1,8 @@
 package com.robomwm.customitemrecipes;
 
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -216,10 +218,12 @@ class CustomRecipes implements CommandExecutor, Listener
         {
             case "shapeless":
                 recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPELESS, item, args[1]));
+                Bukkit.broadcastMessage("create recipe: " + player.toString() + " " + player.hashCode());
                 player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.DISPENSER, "Input shapeless recipe"));
                 break;
             case "shaped":
                 recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPED, item, args[1]));
+                Bukkit.broadcastMessage("create recipe: " + player.toString() + " " + player.hashCode());
                 player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.DISPENSER, "Input shaped recipe"));
                 break;
             default:
@@ -233,11 +237,12 @@ class CustomRecipes implements CommandExecutor, Listener
     @EventHandler
     private void onClose(InventoryCloseEvent event)
     {
+        Bukkit.broadcastMessage("close event: " + event.getPlayer().toString() + " " + event.getPlayer().hashCode());
+        Bukkit.broadcastMessage(String.valueOf(recipeMaker.containsKey(event.getPlayer())) + " " + recipeMaker.containsKey((Player)event.getPlayer()) + " " + (event.getInventory().getHolder() instanceof CIRHolder));
         if (event.getPlayer().getType() != EntityType.PLAYER)
             return;
         Player player = (Player)event.getPlayer();
         RecipeCreateMode createMode = recipeMaker.remove(player);
-
         if (createMode == null || !(event.getInventory().getHolder() instanceof CIRHolder))
             return;
 
@@ -262,7 +267,10 @@ class CustomRecipes implements CommandExecutor, Listener
                 //Generate shape
                 String[] shapedMatrix = getShapedMatrix(ingredients, inventory.getContents()).toArray(new String[0]);
                 if (shapedMatrix.length == 0)
+                {
+                    player.sendMessage(ChatColor.RED + "Recipe creation canceled (empty recipe)");
                     return; //empty
+                }
                 shapedRecipe.shape(shapedMatrix);
 
                 //setIngredients doesn't accept ingredients that aren't present in the shape so yea...
@@ -306,7 +314,10 @@ class CustomRecipes implements CommandExecutor, Listener
                 }
 
                 if (shapelessRecipe.getIngredientList().isEmpty())
+                {
+                    player.sendMessage(ChatColor.RED + "Recipe creation canceled (empty recipe)");
                     return;
+                }
 
                 //Add and save to file
                 if (!customItemRecipes.getServer().addRecipe(shapelessRecipe))

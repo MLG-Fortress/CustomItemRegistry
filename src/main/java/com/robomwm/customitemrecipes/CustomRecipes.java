@@ -232,13 +232,11 @@ class CustomRecipes implements CommandExecutor, Listener
     @EventHandler
     private void onClose(InventoryCloseEvent event)
     {
-        Bukkit.broadcastMessage("close event: " + event.getPlayer().toString() + " " + event.getPlayer().hashCode());
-        Bukkit.broadcastMessage(String.valueOf(recipeMaker.containsKey(event.getPlayer())) + " " + recipeMaker.containsKey((Player)event.getPlayer()) + " " + (event.getInventory().getHolder() instanceof CIRHolder));
         if (event.getPlayer().getType() != EntityType.PLAYER)
             return;
         Player player = (Player)event.getPlayer();
         RecipeCreateMode createMode = recipeMaker.remove(player);
-        if (createMode == null || !(event.getInventory().getHolder() instanceof CIRHolder))
+        if (createMode == null) // || !(event.getInventory().getHolder() instanceof CIRHolder)) //Works in Paper, but not spigot. I guess it being here isn't that necessary...
             return;
 
         Inventory inventory = event.getInventory();

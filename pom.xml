@@ -47,12 +47,17 @@
                     <artifactSet>
                         <includes>
                             <include>org.bstats:bstats-bukkit</include>
+                            <include>com.github.RoboMWM:UsefulUtil</include>
                         </includes>
                     </artifactSet>
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
                             <shadedPattern>com.robomwm.customitemrecipes</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.robomwm.usefulutil</pattern>
+                            <shadedPattern>com.robomwm.customitemrecipes.usefulutil</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>

@@ -1,5 +1,6 @@
 package com.robomwm.customitemrecipes;
 
+import com.robomwm.customitemrecipes.recipebook.RecipeBookSearchCommand;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.Validate;
@@ -7,6 +8,7 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
@@ -60,6 +62,7 @@ public class CustomItemRecipes extends JavaPlugin
         getCommand("cremove").setExecutor(customItems);
         getServer().getPluginManager().registerEvents(recipeBlocker, this);
         getCommand("crecipe").setExecutor(customRecipes);
+        getCommand("recipebook").setExecutor(new RecipeBookSearchCommand(this, new YamlConfiguration()));
 
         try
         {

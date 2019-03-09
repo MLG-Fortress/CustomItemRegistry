@@ -17,6 +17,8 @@ commands:
   cremove:
       usage: /cremove <name> - removes custom item and blocks its recipes. Recipes are fully removed on server restart.
       permission: customitemrecipes.cremove
+  recipebook:
+      aliases: [recipe, recipes, recipesbook]
 permissions:
     customitemrecipes.*:
         description: Grants ALL THE THINGS

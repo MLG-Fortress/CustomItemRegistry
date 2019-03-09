@@ -258,20 +258,20 @@ class CustomItems implements CommandExecutor
         {
             player.sendMessage("Display name:");
             if (!itemMeta.hasDisplayName())
-                player.spigot().sendMessage(LazyUtil.getClickableSuggestion("[Set display name]", "/citem name ", "Set display name"));
+                player.spigot().sendMessage(LazyUtil.suggest("[Set display name]", "/citem name ", "Set display name"));
             else
-                player.spigot().sendMessage(LazyUtil.getClickableSuggestion(ChatColor.RESET + itemMeta.getDisplayName(), "/citem name " + itemMeta.getDisplayName().replaceAll("\u00A7", "&"), "Change display name"));
+                player.spigot().sendMessage(LazyUtil.suggest(ChatColor.RESET + itemMeta.getDisplayName(), "/citem name " + itemMeta.getDisplayName().replaceAll("\u00A7", "&"), "Change display name"));
             if (itemMeta.hasLore())
             {
                 player.sendMessage("Lore:");
                 for (int i = 0; i < itemMeta.getLore().size(); i++)
                 {
-                    player.spigot().sendMessage(LazyUtil.getClickableSuggestion("[+]", "/citem lore insert " + i + " ", "Insert line above"),
-                            LazyUtil.getClickableCommand("[-] ", "/citem lore remove " + i, "Remove line"),
-                            LazyUtil.getClickableSuggestion(ChatColor.DARK_PURPLE.toString() + ChatColor.ITALIC + itemMeta.getLore().get(i), "/citem lore set " + i + " " + itemMeta.getLore().get(i).replaceAll("\u00A7", "&"), "Modify line"));
+                    player.spigot().sendMessage(LazyUtil.suggest("[+]", "/citem lore insert " + i + " ", "Insert line above"),
+                            LazyUtil.command("[-] ", "/citem lore remove " + i, "Remove line"),
+                            LazyUtil.suggest(ChatColor.DARK_PURPLE.toString() + ChatColor.ITALIC + itemMeta.getLore().get(i), "/citem lore set " + i + " " + itemMeta.getLore().get(i).replaceAll("\u00A7", "&"), "Modify line"));
                 }
             }
-            player.spigot().sendMessage(LazyUtil.getClickableSuggestion("[+] Append lore", "/citem lore add ", "Append lore"));
+            player.spigot().sendMessage(LazyUtil.suggest("[+] Append lore", "/citem lore add ", "Append lore"));
         }
         catch (Throwable rock)
         {

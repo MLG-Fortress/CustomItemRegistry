@@ -25,6 +25,10 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>valaria</id>
+            <url>https://repo.valaria.pw/repository/maven-public/</url>
+        </repository>
     </repositories>
     <build>
         <finalName>${project.name}</finalName>
@@ -48,6 +52,7 @@
                         <includes>
                             <include>org.bstats:bstats-bukkit</include>
                             <include>com.github.RoboMWM:UsefulUtil</include>
+                            <include>pw.valaria:bookutil</include>
                         </includes>
                     </artifactSet>
                     <relocations>
@@ -58,6 +63,10 @@
                         <relocation>
                             <pattern>com.robomwm.usefulutil</pattern>
                             <shadedPattern>com.robomwm.customitemrecipes.usefulutil</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>pw.valaria.bookutil</pattern>
+                            <shadedPattern>com.robomwm.prettysimpleshop</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -95,6 +104,17 @@
             <artifactId>UsefulUtil</artifactId>
             <version>3.2</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>pw.valaria</groupId>
+            <artifactId>bookutil</artifactId>
+            <version>1.2-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.6</version>
         </dependency>
     </dependencies>
 

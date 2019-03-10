@@ -107,8 +107,16 @@ class CustomRecipes implements CommandExecutor, Listener
                     if (failedToAddIngredient)
                         continue;
 
-                    customItemRecipes.getLogger().info("Loaded recipe " + recipes);
-                    customItemRecipes.getServer().addRecipe(shapedRecipe);
+                    try
+                    {
+                        customItemRecipes.getServer().addRecipe(shapedRecipe);
+                        customItemRecipes.getLogger().info("Loaded recipe " + recipes);
+                    }
+                    catch (IllegalStateException e)
+                    {
+                        customItemRecipes.getLogger().info("Recipe " + recipes + " already exists (perhaps you reloaded), ignoring.");
+                    }
+
                 }
             }
 
@@ -145,8 +153,15 @@ class CustomRecipes implements CommandExecutor, Listener
                     if (failedToAddIngredient)
                         continue;
 
-                    customItemRecipes.getLogger().info("Loaded recipe " + recipes);
-                    customItemRecipes.getServer().addRecipe(shapelessRecipe);
+                    try
+                    {
+                        customItemRecipes.getServer().addRecipe(shapelessRecipe);
+                        customItemRecipes.getLogger().info("Loaded recipe " + recipes);
+                    }
+                    catch (IllegalStateException e)
+                    {
+                        customItemRecipes.getLogger().info("Recipe " + recipes + " already exists (perhaps you reloaded), ignoring.");
+                    }
                 }
             }
         }

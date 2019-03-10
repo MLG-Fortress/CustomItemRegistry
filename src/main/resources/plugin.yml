@@ -1,6 +1,6 @@
 name: CustomItemRecipes
 description: Create custom items and recipes, complete with API! Wow!
-version: ${project.version}
+version: ${project.version}-${git.commit.id.abbrev}
 website: http://robomwm.com
 author: RoboMWM
 main: com.robomwm.customitemrecipes.CustomItemRecipes

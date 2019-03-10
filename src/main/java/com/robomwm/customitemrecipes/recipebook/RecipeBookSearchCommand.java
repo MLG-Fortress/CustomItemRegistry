@@ -143,7 +143,7 @@ public class RecipeBookSearchCommand implements CommandExecutor, TabCompleter {
     }
 }
 
-class RecipeMatch implements Comparable<RecipeMatch>
+class RecipeMatch implements Comparator<RecipeMatch>
 {
     private Recipe recipe;
     private String name;
@@ -167,8 +167,8 @@ class RecipeMatch implements Comparable<RecipeMatch>
     }
 
     @Override
-    public int compareTo(RecipeMatch o)
+    public int compare(RecipeMatch o1, RecipeMatch o2)
     {
-        return this.match - o.match;
+        return o1.match - o2.match;
     }
 }

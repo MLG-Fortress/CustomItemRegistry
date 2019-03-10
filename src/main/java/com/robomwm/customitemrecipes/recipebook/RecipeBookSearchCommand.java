@@ -16,6 +16,7 @@ import org.bukkit.plugin.Plugin;
 import pw.valaria.bookutil.BookUtil;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -84,7 +85,7 @@ public class RecipeBookSearchCommand implements CommandExecutor, TabCompleter {
             String name = recipes.peek().getName();
             Recipe recipe = recipes.poll().getRecipe();
             builder.add(name).cmd("/showrecipe " + ((Keyed)recipe).getKey(), false).color(ChatColor.AQUA).add("\n");
-            if (count++ > 10)
+            if (count++ > 12)
             {
                 count = 0;
                 builder.add("\\p");
@@ -165,10 +166,9 @@ class RecipeMatch implements Comparable<RecipeMatch>
         return name;
     }
 
-    //Inverted so higher scores are at head of queue.
     @Override
     public int compareTo(RecipeMatch o)
     {
-        return o.match - this.match;
+        return this.match - o.match;
     }
 }

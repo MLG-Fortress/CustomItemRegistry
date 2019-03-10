@@ -75,16 +75,16 @@ public class RecipeBookSearchCommand implements CommandExecutor, TabCompleter {
 
     public boolean searchBook(Player player, Queue<RecipeMatch> recipes)
     {
-        LazyUtil.Builder builder = new LazyUtil.Builder().add("Recipe search results:\n");
+        LazyUtil.Builder builder = new LazyUtil.Builder().add("Recipe search results:\n\n");
 
-        int count = 1;
+        int count = 2;
 
         while (!recipes.isEmpty())
         {
             String name = recipes.peek().getName();
             Recipe recipe = recipes.poll().getRecipe();
             builder.add(name).cmd("/showrecipe " + ((Keyed)recipe).getKey(), false).color(ChatColor.AQUA).add("\n");
-            if (count++ > 9)
+            if (count++ > 10)
             {
                 count = 0;
                 builder.add("\\p");
@@ -96,7 +96,7 @@ public class RecipeBookSearchCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    public Queue<RecipeMatch> sortedSearch(String search, boolean startWith)
+    public Queue<RecipeMatch> sortedSearch(String search)
     {
         Iterator<Recipe> recipeIterator = plugin.getServer().recipeIterator();
         Queue<RecipeMatch> recipes = new PriorityQueue<>();
@@ -122,9 +122,6 @@ public class RecipeBookSearchCommand implements CommandExecutor, TabCompleter {
                     name = result.getType().name();
                 }
             }
-
-            if (startWith && !name.toLowerCase().startsWith(search.toLowerCase()))
-                continue;
 
             recipes.add(new RecipeMatch(recipe, name, fuzzyScore.fuzzyScore(name, search)));
         }

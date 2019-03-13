@@ -19,12 +19,15 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -94,11 +97,15 @@ class CustomRecipes implements CommandExecutor, Listener
                         char keyChar = key.toCharArray()[0];
                         try
                         {
-                            shapedRecipe.setIngredient(keyChar, Material.valueOf(section.getString(key)));
+                            if (section.isString(key)) //compat with older versions
+                                shapedRecipe.setIngredient(keyChar, Material.valueOf(section.getString(key)));
+                            else
+                                shapedRecipe.setIngredient(keyChar, new RecipeChoice.MaterialChoice(stringToMaterialsList(section.getStringList(key))));
+
                         }
                         catch (Throwable rock)
                         {
-                            customItemRecipes.getLogger().severe("invalid ingredient " + section.getString(key) + " specified for " + itemString);
+                            customItemRecipes.getLogger().severe("invalid ingredient/choices " + section.get(key) + " specified for " + itemString);
                             rock.printStackTrace();
                             failedToAddIngredient = true;
                             break;
@@ -107,16 +114,8 @@ class CustomRecipes implements CommandExecutor, Listener
                     if (failedToAddIngredient)
                         continue;
 
-                    try
-                    {
-                        customItemRecipes.getServer().addRecipe(shapedRecipe);
-                        customItemRecipes.getLogger().info("Loaded recipe " + recipes);
-                    }
-                    catch (IllegalStateException e)
-                    {
-                        customItemRecipes.getLogger().info("Recipe " + recipes + " already exists (perhaps you reloaded), ignoring.");
-                    }
-
+                    customItemRecipes.getLogger().info("Loaded recipe " + recipes);
+                    customItemRecipes.getServer().addRecipe(shapedRecipe);
                 }
             }
 
@@ -140,11 +139,11 @@ class CustomRecipes implements CommandExecutor, Listener
                     {
                         try
                         {
-                            shapelessRecipe.addIngredient(1, Material.valueOf(key));
+                            shapelessRecipe.addIngredient(new RecipeChoice.MaterialChoice(stringToMaterialsList(Arrays.asList(key.split(",")))));
                         }
                         catch (Throwable rock)
                         {
-                            customItemRecipes.getLogger().severe("invalid ingredient " + key + " specified for " + itemString);
+                            customItemRecipes.getLogger().severe("invalid ingredient/choices " + key + " specified for " + itemString);
                             rock.printStackTrace();
                             failedToAddIngredient = true;
                             break; //go PR error handling here if u wanna
@@ -153,15 +152,8 @@ class CustomRecipes implements CommandExecutor, Listener
                     if (failedToAddIngredient)
                         continue;
 
-                    try
-                    {
-                        customItemRecipes.getServer().addRecipe(shapelessRecipe);
-                        customItemRecipes.getLogger().info("Loaded recipe " + recipes);
-                    }
-                    catch (IllegalStateException e)
-                    {
-                        customItemRecipes.getLogger().info("Recipe " + recipes + " already exists (perhaps you reloaded), ignoring.");
-                    }
+                    customItemRecipes.getLogger().info("Loaded recipe " + recipes);
+                    customItemRecipes.getServer().addRecipe(shapelessRecipe);
                 }
             }
         }
@@ -184,11 +176,10 @@ class CustomRecipes implements CommandExecutor, Listener
             shapedSection = itemSection.createSection("shaped");
         ConfigurationSection recipeSection = shapedSection.createSection(String.valueOf(System.currentTimeMillis()));
         recipeSection.set("shape", StringUtils.join(shapedRecipe.getShape(), ":"));
-        for (char keyChar : shapedRecipe.getIngredientMap().keySet())
+        for (Map.Entry<Character, RecipeChoice> entry : shapedRecipe.getChoiceMap().entrySet())
         {
-            if (keyChar == 'a')
-                continue;
-            recipeSection.set(String.valueOf(keyChar), shapedRecipe.getIngredientMap().get(keyChar).getType().name()); //Yes not optimal but it's only being called 9 times max, and on command only.
+            RecipeChoice.MaterialChoice choice = (RecipeChoice.MaterialChoice)entry.getValue();
+            recipeSection.set(Character.toString(entry.getKey()), materialsToStringList(choice.getChoices()));
         }
 
         save();
@@ -203,8 +194,17 @@ class CustomRecipes implements CommandExecutor, Listener
         if (shapelessSection == null)
             shapelessSection = itemSection.createSection("shapeless");
         List<String> materials = new LinkedList<>();
-        for (ItemStack itemStack : shapelessRecipe.getIngredientList())
-            materials.add(itemStack.getType().name());
+        for (RecipeChoice choice : shapelessRecipe.getChoiceList())
+        {
+            RecipeChoice.MaterialChoice materialChoice = (RecipeChoice.MaterialChoice)choice;
+            StringBuilder builder = new StringBuilder();
+
+            for (Material material : materialChoice.getChoices())
+                builder.append(material).append(",");
+
+            builder.setLength(builder.length() - 1);
+            materials.add(builder.toString());
+        }
         shapelessSection.set(String.valueOf(System.currentTimeMillis()), materials);
         save();
     }
@@ -393,6 +393,22 @@ class CustomRecipes implements CommandExecutor, Listener
         }
 
         return trimmedMatrix;
+    }
+
+    public List<String> materialsToStringList(List<Material> materials)
+    {
+        List<String> names = new ArrayList<>(materials.size());
+        for (Material material : materials)
+            names.add(material.name());
+        return names;
+    }
+
+    public List<Material> stringToMaterialsList(List<String> materialNames)
+    {
+        List<Material> materials = new ArrayList<>(materialNames.size());
+        for (String name : materialNames)
+            materials.add(Material.valueOf(name));
+        return materials;
     }
 }
 

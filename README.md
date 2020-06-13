@@ -7,12 +7,12 @@ Create your own custom items and recipes, all in-game (or via the files, if that
 
 This plugin provides an API for plugins to to register, recognize, and spawn custom items created by server administrators and other plugins (that hook into this plugin).
 
-You can create and register your own items for plugins to use like AbsorptionShields, and spawn them with the exact same name, lore, durability, etc.
+You can create and register your own items for plugins to use like [AbsorptionShields](https://dev.bukkit.org/projects/absorptionshields), and spawn them with the exact same name, lore, durability, etc.
 
 There is also auxilliary recipe creation support which is registered directly into the server's recipe store, but this is limited to the crafting table and limitations of the vanilla crafting system.
 
 ## Commands
-- [Permissions](https://github.com/MLG-Fortress/CustomItemRecipes/blob/master/src/main/resources/plugin.yml)
+- [Permissions](../../src/main/resources/plugin.yml)
 - /citem - Name, add lore, or register a new custom item.
 - /crecipe - Create a shaped or shapeless recipe for a custom item.
 - /cremove - Removes a custom item and all its recipes.

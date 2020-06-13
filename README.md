@@ -1,7 +1,7 @@
 # CustomItemRegistry
 Create your own custom items and recipes, all in-game (or via the files, if that's your fancy)! All items are registered within this plugin, providing an API for plugins to recognize custom items and register their own!
 
-[**Having problems or issues?❓ Click here for help!💡**](../../issues) | [Support me c:](https://r.robomwm.com/patreon) | [Source code](../../) | [Project page](https://dev.bukkit.org/projects/customitemrecipes)
+[**Having problems or issues?❓ Click here for help!💡**](../../issues) | [Support me c:](https://r.robomwm.com/patreon) | [Source code](../../) | [Project page + Downloads](https://dev.bukkit.org/projects/customitemregistry)
 
 ## Purpose
 

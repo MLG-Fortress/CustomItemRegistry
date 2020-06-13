@@ -12,7 +12,7 @@ You can create and register your own items for plugins to use like [AbsorptionSh
 There is also auxilliary recipe creation support which is registered directly into the server's recipe store, but this is limited to the crafting table and limitations of the vanilla crafting system.
 
 ## Commands
-- [Permissions](../../src/main/resources/plugin.yml)
+- [Permissions](/src/main/resources/plugin.yml)
 - /citem - Name, add lore, or register a new custom item.
 - /crecipe - Create a shaped or shapeless recipe for a custom item.
 - /cremove - Removes a custom item and all its recipes.

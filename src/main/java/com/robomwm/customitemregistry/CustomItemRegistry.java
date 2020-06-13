@@ -1,4 +1,4 @@
-package com.robomwm.customitemrecipes;
+package com.robomwm.customitemregistry;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -32,7 +32,7 @@ import java.util.stream.IntStream;
  *
  * @author RoboMWM
  */
-public class CustomItemRecipes extends JavaPlugin
+public class CustomItemRegistry extends JavaPlugin
 {
     private Map<String, ItemStack> items = new HashMap<>();
 

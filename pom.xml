@@ -6,7 +6,7 @@
 
     <groupId>com.robomwm</groupId>
     <artifactId>CustomItemRecipes</artifactId>
-    <version>1.4.6</version>
+    <version>2.0.0</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -54,11 +54,11 @@
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>com.robomwm.customitemrecipes</shadedPattern>
+                            <shadedPattern>com.robomwm.customitemregistry</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.robomwm.usefulutil</pattern>
-                            <shadedPattern>com.robomwm.customitemrecipes.usefulutil</shadedPattern>
+                            <shadedPattern>com.robomwm.customitemregistry.usefulutil</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -92,7 +92,7 @@
         <dependency>
             <groupId>com.destroystokyo.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.14.2-R0.1-SNAPSHOT</version>
+            <version>1.15.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

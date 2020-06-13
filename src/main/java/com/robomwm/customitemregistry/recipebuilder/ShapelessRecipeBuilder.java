@@ -1,4 +1,4 @@
-package com.robomwm.customitemrecipes.recipebuilder;
+package com.robomwm.customitemregistry.recipebuilder;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

@@ -1,4 +1,4 @@
-package com.robomwm.customitemrecipes;
+package com.robomwm.customitemregistry;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Keyed;
@@ -8,16 +8,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -37,7 +32,7 @@ public class RecipeBlocker implements Listener
     //But all crafting table recipes are keyed so we can just use that instead of iterating instead. Yay?
     private Set<NamespacedKey> resultsToBlock = new HashSet<>();
 
-    RecipeBlocker(CustomItemRecipes plugin)
+    RecipeBlocker(CustomItemRegistry plugin)
     {
         this.plugin = plugin;
     }

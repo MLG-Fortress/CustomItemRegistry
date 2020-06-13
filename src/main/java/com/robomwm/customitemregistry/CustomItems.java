@@ -1,4 +1,4 @@
-package com.robomwm.customitemrecipes;
+package com.robomwm.customitemregistry;
 
 import com.robomwm.usefulutil.UsefulUtil;
 import org.apache.commons.lang.StringUtils;
@@ -24,19 +24,19 @@ import java.util.List;
  */
 class CustomItems implements CommandExecutor
 {
-    private CustomItemRecipes customItemRecipes;
+    private CustomItemRegistry customItemRegistry;
     private YamlConfiguration itemsYaml;
     private File itemsFile;
 
     public void save()
     {
-        UsefulUtil.saveStringToFile(customItemRecipes, itemsFile, itemsYaml.saveToString());
+        UsefulUtil.saveStringToFile(customItemRegistry, itemsFile, itemsYaml.saveToString());
     }
 
-    CustomItems(CustomItemRecipes customItemRecipes)
+    CustomItems(CustomItemRegistry customItemRegistry)
     {
-        this.customItemRecipes = customItemRecipes;
-        itemsFile = new File(customItemRecipes.getDataFolder(), "items.yml");
+        this.customItemRegistry = customItemRegistry;
+        itemsFile = new File(customItemRegistry.getDataFolder(), "items.yml");
         if (!itemsFile.exists())
         {
             try
@@ -55,12 +55,12 @@ class CustomItems implements CommandExecutor
         {
             try
             {
-                customItemRecipes.registerItem((ItemStack)itemsYaml.get(itemString), itemString);
+                customItemRegistry.registerItem((ItemStack)itemsYaml.get(itemString), itemString);
             }
             catch (Throwable rock)
             {
-                customItemRecipes.getLogger().warning("Failed to load item " + itemString);
-                customItemRecipes.getLogger().warning("Perhaps it's a 1.12 or earlier item? Consider manually fixing or removing the item from the config.");
+                customItemRegistry.getLogger().warning("Failed to load item " + itemString);
+                customItemRegistry.getLogger().warning("Perhaps it's a 1.12 or earlier item? Consider manually fixing or removing the item from the config.");
                 rock.printStackTrace();
             }
         }
@@ -80,7 +80,7 @@ class CustomItems implements CommandExecutor
             return false;
         if (cmd.getName().equalsIgnoreCase("cremove"))
         {
-            if (customItemRecipes.removeItem(args[0]))
+            if (customItemRegistry.removeItem(args[0]))
                 sender.sendMessage("Removed " + args[0] + " and all of its recipes.");
             else
                 sender.sendMessage("Item is not registered");
@@ -95,7 +95,7 @@ class CustomItems implements CommandExecutor
             switch(args[0].toLowerCase())
             {
                 case "list":
-                    for (String cid : customItemRecipes.getItemNames())
+                    for (String cid : customItemRegistry.getItemNames())
                         sender.sendMessage(cid);
                     break;
                 case "lore":
@@ -118,7 +118,7 @@ class CustomItems implements CommandExecutor
         }
         if (args[0].equalsIgnoreCase("get"))
         {
-            ItemStack itemStack = customItemRecipes.getItem(args[1]);
+            ItemStack itemStack = customItemRegistry.getItem(args[1]);
             if (itemStack != null)
             {
                 player.sendMessage("Attempted to give you the requested item");
@@ -134,7 +134,7 @@ class CustomItems implements CommandExecutor
             return false;
 
         ItemMeta itemMeta = item.getItemMeta();
-        if (customItemRecipes.extractCustomID(itemMeta) != null)
+        if (customItemRegistry.extractCustomID(itemMeta) != null)
         {
             List<String> lore = itemMeta.getLore();
             lore.remove(itemMeta.getLore().size() - 1);
@@ -209,7 +209,7 @@ class CustomItems implements CommandExecutor
                 itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, " ").substring(1)));
                 break;
             case "register":
-                if (!customItemRecipes.registerItem(item, args[1]))
+                if (!customItemRegistry.registerItem(item, args[1]))
                 {
                     sender.sendMessage("Already registered, use /cremove or /citem reregister.");
                     sender.sendMessage("Note: /citem reregister does not remove old recipes.");
@@ -221,7 +221,7 @@ class CustomItems implements CommandExecutor
                 save();
                 return true;
             case "reregister":
-                customItemRecipes.registerItem(item, args[1], true);
+                customItemRegistry.registerItem(item, args[1], true);
                 itemsYaml.set(args[1], item.clone());
                 sender.sendMessage("Registered " + args[1] + ". Note that existing recipes for the previously-registered item will still exist until next server restart.");
                 sender.sendMessage("Use /citem get " + args[1] + " to obtain the registered item.");
@@ -247,7 +247,7 @@ class CustomItems implements CommandExecutor
             return;
         }
         ItemMeta itemMeta = item.getItemMeta();
-        if (customItemRecipes.extractCustomID(itemMeta) != null)
+        if (customItemRegistry.extractCustomID(itemMeta) != null)
         {
             List<String> lore = itemMeta.getLore();
             lore.remove(itemMeta.getLore().size() - 1);

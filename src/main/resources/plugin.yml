@@ -1,35 +1,35 @@
-name: CustomItemRecipes
+name: CustomItemRegistry
 description: Create custom items and recipes, complete with API! Wow!
 version: ${project.version}-${git.commit.id.abbrev}
 website: http://robomwm.com
 author: RoboMWM
-main: com.robomwm.customitemrecipes.CustomItemRecipes
-api-version: '1.14'
+main: com.robomwm.customitemregistry.CustomItemRegistry
+api-version: '1.15'
 commands:
   crecipe:
       usage: /crecipe <shaped/shapeless> <customitem name> - Registers a recipe for a registered custom item. Use shaped if the order (shape of recipe) matters, otherwise use shapeless if only the ingredients matter. Note that recipes only use one item per slot.
-      permission: customitemrecipes.crecipe
+      permission: customitemregistry.crecipe
       aliases: [crecipes]
   citem:
       usage: /citem <list/name/register/get/lore>
-      permission: customitemrecipes.citem
+      permission: customitemregistry.citem
       aliases: [citems]
   cremove:
       usage: /cremove <name> - removes custom item and blocks its recipes. Recipes are fully removed on server restart.
-      permission: customitemrecipes.cremove
+      permission: customitemregistry.cremove
 permissions:
-    customitemrecipes.*:
+    customitemregistry.*:
         description: Grants ALL THE THINGS
         children:
-            customitemrecipes.citem: true
-            customitemrecipes.crecipe: true
-            customitemrecipes.cremove: true
-    customitemrecipes.citem:
+            customitemregistry.citem: true
+            customitemregistry.crecipe: true
+            customitemregistry.cremove: true
+    customitemregistry.citem:
         description: Permission to /citem
         default: op
-    customitemrecipes.crecipe:
+    customitemregistry.crecipe:
         description: Permission to /crecipe
         default: op
-    customitemrecipes.cremove:
+    customitemregistry.cremove:
         description: Permission to /cremove
         default: op

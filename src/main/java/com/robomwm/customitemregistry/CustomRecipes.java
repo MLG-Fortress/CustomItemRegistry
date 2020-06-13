@@ -1,4 +1,4 @@
-package com.robomwm.customitemrecipes;
+package com.robomwm.customitemregistry;
 
 import com.robomwm.usefulutil.UsefulUtil;
 import org.apache.commons.lang.StringUtils;
@@ -19,7 +19,6 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
@@ -40,20 +39,20 @@ import java.util.Map;
  */
 class CustomRecipes implements CommandExecutor, Listener
 {
-    private CustomItemRecipes customItemRecipes;
+    private CustomItemRegistry customItemRegistry;
     private YamlConfiguration recipesYaml;
     private File recipesFile;
 
     public void save()
     {
-        UsefulUtil.saveStringToFile(customItemRecipes, recipesFile, recipesYaml.saveToString());
+        UsefulUtil.saveStringToFile(customItemRegistry, recipesFile, recipesYaml.saveToString());
     }
 
-    CustomRecipes(CustomItemRecipes customItemRecipes)
+    CustomRecipes(CustomItemRegistry customItemRegistry)
     {
-        this.customItemRecipes = customItemRecipes;
-        customItemRecipes.getServer().getPluginManager().registerEvents(this, customItemRecipes);
-        recipesFile = new File(customItemRecipes.getDataFolder(), "recipes.yml");
+        this.customItemRegistry = customItemRegistry;
+        customItemRegistry.getServer().getPluginManager().registerEvents(this, customItemRegistry);
+        recipesFile = new File(customItemRegistry.getDataFolder(), "recipes.yml");
         if (!recipesFile.exists())
         {
             try
@@ -67,22 +66,22 @@ class CustomRecipes implements CommandExecutor, Listener
             }
         }
         recipesYaml = YamlConfiguration.loadConfiguration(recipesFile);
-        customItemRecipes.getLogger().info("Starting to load recipes");
+        customItemRegistry.getLogger().info("Starting to load recipes");
 
         for (String itemString : recipesYaml.getKeys(false)) //for each item
         {
-            customItemRecipes.getLogger().info("Loading recipes for " + itemString);
+            customItemRegistry.getLogger().info("Loading recipes for " + itemString);
             ConfigurationSection shapedSection = recipesYaml.getConfigurationSection(itemString).getConfigurationSection("shaped");
             if (shapedSection != null) //for each shapedRecipe
             {
-                customItemRecipes.getLogger().info("Loading shaped recipes");
+                customItemRegistry.getLogger().info("Loading shaped recipes");
                 for (String recipes : shapedSection.getKeys(false)) //for each recipe
                 {
-                    customItemRecipes.getLogger().info("Loading " + recipes);
-                    ShapedRecipe shapedRecipe = customItemRecipes.getShapedRecipe(customItemRecipes, itemString);
+                    customItemRegistry.getLogger().info("Loading " + recipes);
+                    ShapedRecipe shapedRecipe = customItemRegistry.getShapedRecipe(customItemRegistry, itemString);
                     if (shapedRecipe == null)
                     {
-                        customItemRecipes.getLogger().warning(itemString +
+                        customItemRegistry.getLogger().warning(itemString +
                                 " is not a registered custom item, skipping...");
                         continue;
                     }
@@ -105,7 +104,7 @@ class CustomRecipes implements CommandExecutor, Listener
                         }
                         catch (Throwable rock)
                         {
-                            customItemRecipes.getLogger().severe("invalid ingredient/choices " + section.get(key) + " specified for " + itemString);
+                            customItemRegistry.getLogger().severe("invalid ingredient/choices " + section.get(key) + " specified for " + itemString);
                             rock.printStackTrace();
                             failedToAddIngredient = true;
                             break;
@@ -114,8 +113,8 @@ class CustomRecipes implements CommandExecutor, Listener
                     if (failedToAddIngredient)
                         continue;
 
-                    customItemRecipes.getLogger().info("Loaded recipe " + recipes);
-                    customItemRecipes.getServer().addRecipe(shapedRecipe);
+                    customItemRegistry.getLogger().info("Loaded recipe " + recipes);
+                    customItemRegistry.getServer().addRecipe(shapedRecipe);
                 }
             }
 
@@ -123,13 +122,13 @@ class CustomRecipes implements CommandExecutor, Listener
 
             if (shapelessSection != null)
             {
-                customItemRecipes.getLogger().info("Loading shapeless recipes");
+                customItemRegistry.getLogger().info("Loading shapeless recipes");
                 for (String recipes : shapelessSection.getKeys(false)) //for each shapeless recipe
                 {
-                    ShapelessRecipe shapelessRecipe = customItemRecipes.getShapelessRecipe(customItemRecipes, itemString);
+                    ShapelessRecipe shapelessRecipe = customItemRegistry.getShapelessRecipe(customItemRegistry, itemString);
                     if (shapelessRecipe == null)
                     {
-                        customItemRecipes.getLogger().warning(itemString +
+                        customItemRegistry.getLogger().warning(itemString +
                                 " is not a registered custom item, skipping...");
                         continue;
                     }
@@ -143,7 +142,7 @@ class CustomRecipes implements CommandExecutor, Listener
                         }
                         catch (Throwable rock)
                         {
-                            customItemRecipes.getLogger().severe("invalid ingredient/choices " + key + " specified for " + itemString);
+                            customItemRegistry.getLogger().severe("invalid ingredient/choices " + key + " specified for " + itemString);
                             rock.printStackTrace();
                             failedToAddIngredient = true;
                             break; //go PR error handling here if u wanna
@@ -152,12 +151,12 @@ class CustomRecipes implements CommandExecutor, Listener
                     if (failedToAddIngredient)
                         continue;
 
-                    customItemRecipes.getLogger().info("Loaded recipe " + recipes);
-                    customItemRecipes.getServer().addRecipe(shapelessRecipe);
+                    customItemRegistry.getLogger().info("Loaded recipe " + recipes);
+                    customItemRegistry.getServer().addRecipe(shapelessRecipe);
                 }
             }
         }
-        customItemRecipes.getLogger().info("Finished loading recipes");
+        customItemRegistry.getLogger().info("Finished loading recipes");
     }
 
     public void removeAllRecipes(String name)
@@ -217,7 +216,7 @@ class CustomRecipes implements CommandExecutor, Listener
         if (!(sender instanceof Player))
             return false;
         Player player = (Player)sender;
-        ItemStack item = customItemRecipes.getItem(args[1]);
+        ItemStack item = customItemRegistry.getItem(args[1]);
         if (item == null)
         {
             sender.sendMessage(args[1] + " is not a registered custom item name. Use /citem to register an item.");
@@ -229,12 +228,12 @@ class CustomRecipes implements CommandExecutor, Listener
             case "shapeless":
                 recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPELESS, item, args[1]));
                 Bukkit.broadcastMessage("create recipe: " + player.toString() + " " + player.hashCode());
-                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.DISPENSER, "Input shapeless recipe"));
+                player.openInventory(customItemRegistry.getServer().createInventory(new CIRHolder(), InventoryType.DISPENSER, "Input shapeless recipe"));
                 break;
             case "shaped":
                 recipeMaker.put(player, new RecipeCreateMode(ShapeMode.SHAPED, item, args[1]));
                 Bukkit.broadcastMessage("create recipe: " + player.toString() + " " + player.hashCode());
-                player.openInventory(customItemRecipes.getServer().createInventory(new CIRHolder(), InventoryType.DISPENSER, "Input shaped recipe"));
+                player.openInventory(customItemRegistry.getServer().createInventory(new CIRHolder(), InventoryType.DISPENSER, "Input shaped recipe"));
                 break;
             default:
                 return false;
@@ -259,7 +258,7 @@ class CustomRecipes implements CommandExecutor, Listener
         switch(createMode.getShapeMode())
         {
             case SHAPED:
-                ShapedRecipe shapedRecipe = customItemRecipes.getShapedRecipe(customItemRecipes, createMode.getName());
+                ShapedRecipe shapedRecipe = customItemRegistry.getShapedRecipe(customItemRegistry, createMode.getName());
 
                 //Generate ingredients character map.
                 Map<Material, Character> ingredients = new HashMap<>();
@@ -306,7 +305,7 @@ class CustomRecipes implements CommandExecutor, Listener
                 }
 
                 //Add and save to file
-                if (!customItemRecipes.getServer().addRecipe(shapedRecipe))
+                if (!customItemRegistry.getServer().addRecipe(shapedRecipe))
                 {
                     player.sendMessage("Couldn't add recipe for some reason...");
                     return;
@@ -314,7 +313,7 @@ class CustomRecipes implements CommandExecutor, Listener
                 saveShapedRecipe(createMode.getName(), shapedRecipe);
                 break;
             case SHAPELESS: //Way easier than shaped lol
-                ShapelessRecipe shapelessRecipe = customItemRecipes.getShapelessRecipe(customItemRecipes, createMode.getName());
+                ShapelessRecipe shapelessRecipe = customItemRegistry.getShapelessRecipe(customItemRegistry, createMode.getName());
                 for (ItemStack itemStack : inventory.getContents())
                 {
                     if (itemStack == null)
@@ -329,7 +328,7 @@ class CustomRecipes implements CommandExecutor, Listener
                 }
 
                 //Add and save to file
-                if (!customItemRecipes.getServer().addRecipe(shapelessRecipe))
+                if (!customItemRegistry.getServer().addRecipe(shapelessRecipe))
                 {
                     player.sendMessage("Couldn't add recipe for some reason...");
                     return;

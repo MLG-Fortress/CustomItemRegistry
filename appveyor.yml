@@ -31,5 +31,5 @@ cache:
   - C:\maven\
   - C:\Users\appveyor\.m2
 artifacts:
-- path: target/CustomItemRecipes.jar
-  name: CustomItemRecipes
+- path: target/CustomItemRegistry.jar
+  name: CustomItemRegistry

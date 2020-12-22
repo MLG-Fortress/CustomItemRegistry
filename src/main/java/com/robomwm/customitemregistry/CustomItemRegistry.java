@@ -63,7 +63,7 @@ public class CustomItemRegistry extends JavaPlugin
 
         try
         {
-            Metrics metrics = new Metrics(this);
+            Metrics metrics = new Metrics(this, 7843);
             metrics.addCustomChart(new Metrics.SimplePie("bukkit_implementation", new Callable<String>()
             {
                 @Override

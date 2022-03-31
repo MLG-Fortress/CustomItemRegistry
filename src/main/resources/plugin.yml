@@ -4,7 +4,7 @@ version: ${project.version}-${git.commit.id.abbrev}
 website: http://robomwm.com
 author: RoboMWM
 main: com.robomwm.customitemregistry.CustomItemRegistry
-api-version: '1.15'
+api-version: '1.18'
 commands:
   crecipe:
       usage: /crecipe <shaped/shapeless> <customitem name> - Registers a recipe for a registered custom item. Use shaped if the order (shape of recipe) matters, otherwise use shapeless if only the ingredients matter. Note that recipes only use one item per slot.

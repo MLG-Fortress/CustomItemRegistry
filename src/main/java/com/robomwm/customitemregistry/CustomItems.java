@@ -55,7 +55,13 @@ class CustomItems implements CommandExecutor
         {
             try
             {
-                customItemRegistry.registerItem((ItemStack)itemsYaml.get(itemString), itemString);
+                ItemStack itemStack = itemsYaml.getItemStack(itemString);
+                if (itemStack == null)
+                {
+                    customItemRegistry.getLogger().warning("Failed to load item " + itemString + " due to invalid or legacy config data.");
+                    continue;
+                }
+                customItemRegistry.registerItem(itemStack, itemString);
             }
             catch (Throwable rock)
             {

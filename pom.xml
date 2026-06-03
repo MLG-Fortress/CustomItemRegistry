@@ -93,7 +93,7 @@
         <dependency>
             <groupId>org.purpurmc.purpur</groupId>
             <artifactId>purpur-api</artifactId>
-            <version>26.1.2.build.2587-stable</version>
+            <version>26.1.2.build.2590-stable</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
